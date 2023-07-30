@@ -1,60 +1,62 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"net/http"
-
-	"github.com/gocolly/colly"
-	"github.com/line/line-bot-sdk-go/linebot"
 )
 
-var bot *linebot.Client
+type TimeSeries struct {
+	TimeDefines []string `json:"timeDefines"`
+	Areas       []Area   `json:"areas"`
+}
+
+type Area struct {
+	Name       map[string]string `json:"area"`
+	Weathers   []string          `json:"weathers,omitempty"`
+	Winds      []string          `json:"winds,omitempty"`
+	Waves      []string          `json:"waves,omitempty"`
+	Pops       []string          `json:"pops,omitempty"`
+	Temps      []string          `json:"temps,omitempty"`
+}
+
+type WeatherReport struct {
+	PublishingOffice string       `json:"publishingOffice"`
+	ReportDatetime   string       `json:"reportDatetime"`
+	TimeSeries       []TimeSeries `json:"timeSeries"`
+}
 
 func main() {
-	var err error
-	bot, err = linebot.New(
-		"your Channel Secret",
-		"your Channel Access Token",
-	)
+	resp, err := http.Get("https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
 	}
 
-	http.HandleFunc("/callback", callbackHandler)
-
-	// 非同期にスクレイピングを開始
-	go scrape()
-
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func callbackHandler(w http.ResponseWriter, r *http.Request) {
-	// Callback処理はここに書く
-}
-
-func scrape() {
-	c := colly.NewCollector()
-
-	c.OnHTML("特定のHTML要素", func(e *colly.HTMLElement) {
-		// ここで降水確率をパースする処理を書く
-	})
-
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL)
-	})
-
-	// 神奈川県の天気予報ページ
-	err := c.Visit("https://weathernews.jp/onebox/tenki/kanagawa/")
-	if err != nil {
-		fmt.Println(err)
+	var reports []WeatherReport
+	if err := json.Unmarshal(body, &reports); err != nil {
+		panic(err)
 	}
 
-	// 東京都の天気予報ページ
-	err = c.Visit("https://weathernews.jp/onebox/tenki/tokyo/")
-	if err != nil {
-		fmt.Println(err)
+	// 横浜のデータを探します
+	for _, report := range reports {
+		for _, ts := range report.TimeSeries {
+			for _, area := range ts.Areas {
+				if area.Name["name"] == "横浜" {
+					// データを表示します
+					fmt.Printf("Weathers: %v\n", area.Weathers)
+					fmt.Printf("Winds: %v\n", area.Winds)
+					fmt.Printf("Waves: %v\n", area.Waves)
+					fmt.Printf("Pops: %v\n", area.Pops)
+					fmt.Printf("Temps: %v\n", area.Temps)
+				}
+			}
+		}
 	}
 }
