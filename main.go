@@ -7,54 +7,48 @@ import (
 	"net/http"
 )
 
-type TimeSeries struct {
-	TimeDefines []string `json:"timeDefines"`
-	Areas       []Area   `json:"areas"`
+type WeatherInfo struct {
+	TimeSeries []TimeSeriesInfo `json:"timeSeries"`
 }
 
-type Area struct {
-	Name     map[string]string `json:"area"`
-	Weathers []string          `json:"weathers,omitempty"`
-	Winds    []string          `json:"winds,omitempty"`
-	Waves    []string          `json:"waves,omitempty"`
-	Pops     []string          `json:"pops,omitempty"`
-	Temps    []string          `json:"temps,omitempty"`
+type TimeSeriesInfo struct {
+	Areas []AreaInfo `json:"areas"`
 }
 
-type WeatherReport struct {
-	PublishingOffice string       `json:"publishingOffice"`
-	ReportDatetime   string       `json:"reportDatetime"`
-	TimeSeries       []TimeSeries `json:"timeSeries"`
+type AreaInfo struct {
+	Area struct {
+		Name string `json:"name"`
+		Code string `json:"code"`
+	} `json:"area"`
+	Pops *[]string `json:"pops"`
 }
 
 func main() {
 	resp, err := http.Get("https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json")
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 
-	var reports []WeatherReport
-	if err := json.Unmarshal(body, &reports); err != nil {
-		panic(err)
+	var weatherReport []WeatherInfo
+	if err := json.Unmarshal(body, &weatherReport); err != nil {
+		fmt.Println(err)
+		return
 	}
 
-	// 横浜のデータを探します
-	for _, report := range reports {
-		for _, ts := range report.TimeSeries {
-			for _, area := range ts.Areas {
-				if area.Name["name"] == "横浜" {
-					// データを表示します
-					fmt.Printf("Weathers: %v\n", area.Weathers)
-					fmt.Printf("Winds: %v\n", area.Winds)
-					fmt.Printf("Waves: %v\n", area.Waves)
-					fmt.Printf("Pops: %v\n", area.Pops)
-					fmt.Printf("Temps: %v\n", area.Temps)
+	for _, info := range weatherReport {
+		for _, timeSeries := range info.TimeSeries {
+			for _, area := range timeSeries.Areas {
+				if area.Area.Code == "140020" && area.Pops != nil {
+					fmt.Println("Area: ", area.Area.Name)
+					fmt.Println("Precipitation Probability: ", *area.Pops)
 				}
 			}
 		}
