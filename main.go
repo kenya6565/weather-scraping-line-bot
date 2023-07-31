@@ -13,12 +13,12 @@ type TimeSeries struct {
 }
 
 type Area struct {
-	Name       map[string]string `json:"area"`
-	Weathers   []string          `json:"weathers,omitempty"`
-	Winds      []string          `json:"winds,omitempty"`
-	Waves      []string          `json:"waves,omitempty"`
-	Pops       []string          `json:"pops,omitempty"`
-	Temps      []string          `json:"temps,omitempty"`
+	Name     map[string]string `json:"area"`
+	Weathers []string          `json:"weathers,omitempty"`
+	Winds    []string          `json:"winds,omitempty"`
+	Waves    []string          `json:"waves,omitempty"`
+	Pops     []string          `json:"pops,omitempty"`
+	Temps    []string          `json:"temps,omitempty"`
 }
 
 type WeatherReport struct {
