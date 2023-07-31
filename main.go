@@ -12,7 +12,8 @@ type WeatherInfo struct {
 }
 
 type TimeSeriesInfo struct {
-	Areas []AreaInfo `json:"areas"`
+	Areas       []AreaInfo `json:"areas"`
+	TimeDefines []string   `json:"timeDefines"`
 }
 
 type AreaInfo struct {
@@ -49,6 +50,7 @@ func main() {
 			for _, area := range timeSeries.Areas {
 				if area.Area.Code == "140020" && area.Pops != nil {
 					fmt.Println("Area: ", area.Area.Name)
+					fmt.Println("TimeDefines: ", timeSeries.TimeDefines)
 					fmt.Println("Precipitation Probability: ", *area.Pops)
 				}
 			}
