@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -20,6 +20,7 @@ type AreaInfo struct {
 		Name string `json:"name"`
 		Code string `json:"code"`
 	} `json:"area"`
+	// can be nil
 	Pops *[]string `json:"pops"`
 }
 
@@ -31,7 +32,7 @@ func main() {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println(err)
 		return
