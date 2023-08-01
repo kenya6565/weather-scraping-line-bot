@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -51,15 +52,17 @@ func main() {
 			for _, area := range timeSeries.Areas {
 				if area.Area.Code == "140020" && area.Pops != nil {
 					fmt.Println("Area: ", area.Area.Name)
-					fmt.Println("TimeDefines: ")
-					for _, timeDefine := range timeSeries.TimeDefines {
-						parsedTime, _ := time.Parse(time.RFC3339, timeDefine)
-						jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-						fmt.Println(parsedTime.In(jst).Format("2006-01-02 15:04"))
-					}
-					fmt.Println("Precipitation Probability: ")
-					for _, pop := range *area.Pops {
-						fmt.Println(pop)
+					for i, pop := range *area.Pops {
+						popInt, err := strconv.Atoi(pop)
+						if err != nil {
+							fmt.Println("Error converting pop to integer: ", err)
+							continue
+						}
+						if popInt >= 50 {
+							parsedTime, _ := time.Parse(time.RFC3339, timeSeries.TimeDefines[i])
+							jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+							fmt.Printf("Time: %v, Precipitation Probability: %v\n", parsedTime.In(jst).Format("2006-01-02 15:04"), pop)
+						}
 					}
 				}
 			}
