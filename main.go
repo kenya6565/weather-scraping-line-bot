@@ -50,8 +50,14 @@ func main() {
 			for _, area := range timeSeries.Areas {
 				if area.Area.Code == "140020" && area.Pops != nil {
 					fmt.Println("Area: ", area.Area.Name)
-					fmt.Println("TimeDefines: ", timeSeries.TimeDefines)
-					fmt.Println("Precipitation Probability: ", *area.Pops)
+					fmt.Println("TimeDefines: ")
+					for _, timeDefine := range timeSeries.TimeDefines {
+						fmt.Println(timeDefine)
+					}
+					fmt.Println("Precipitation Probability: ")
+					for _, pop := range *area.Pops {
+						fmt.Println(pop)
+					}
 				}
 			}
 		}
