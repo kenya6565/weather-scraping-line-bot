@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 type WeatherInfo struct {
@@ -52,7 +53,9 @@ func main() {
 					fmt.Println("Area: ", area.Area.Name)
 					fmt.Println("TimeDefines: ")
 					for _, timeDefine := range timeSeries.TimeDefines {
-						fmt.Println(timeDefine)
+						parsedTime, _ := time.Parse(time.RFC3339, timeDefine)
+						jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+						fmt.Println(parsedTime.In(jst).Format("2006-01-02 15:04"))
 					}
 					fmt.Println("Precipitation Probability: ")
 					for _, pop := range *area.Pops {
