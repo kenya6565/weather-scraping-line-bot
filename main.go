@@ -27,49 +27,61 @@ type AreaInfo struct {
 	Pops *[]string `json:"pops"`
 }
 
-func main() {
+func fetchWeatherReport() ([]WeatherInfo, error) {
 	resp, err := http.Get("https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json")
 	if err != nil {
-		fmt.Println(err)
-		return
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return nil, err
 	}
 
 	var weatherReport []WeatherInfo
-	if err := json.Unmarshal(body, &weatherReport); err != nil {
-		fmt.Println(err)
-		return
-	}
+	err = json.Unmarshal(body, &weatherReport)
+	return weatherReport, err
+}
 
+func processWeatherReport(weatherReport []WeatherInfo) {
 	for _, info := range weatherReport {
 		for _, timeSeries := range info.TimeSeries {
 			for _, area := range timeSeries.Areas {
 				if area.Area.Code == "140020" && area.Pops != nil {
-					for i, popStr := range *area.Pops {
-						pop, err := strconv.Atoi(popStr)
-						if err != nil {
-							fmt.Println("Error converting pop to integer: ", err)
-							return
-						}
-						if pop >= 20 {
-							timeDefine := timeSeries.TimeDefines[i]
-							parsedTime, err := time.Parse(time.RFC3339, timeDefine)
-							if err != nil {
-								fmt.Println("Error parsing time: ", err)
-								return
-							}
-							jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-							fmt.Printf("Time: %s, Precipitation Probability: %d\n", parsedTime.In(jst).Format("2006-01-02 15:04"), pop)
-						}
-					}
+					printPrecipProb(area, timeSeries)
 				}
 			}
 		}
 	}
+}
+
+func printPrecipProb(area AreaInfo, timeSeries TimeSeriesInfo) {
+	for i, popStr := range *area.Pops {
+		pop, err := strconv.Atoi(popStr)
+		if err != nil {
+			fmt.Println("Error converting pop to integer: ", err)
+			return
+		}
+		if pop >= 20 {
+			timeDefine := timeSeries.TimeDefines[i]
+			parsedTime, err := time.Parse(time.RFC3339, timeDefine)
+			if err != nil {
+				fmt.Println("Error parsing time: ", err)
+				return
+			}
+			jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+			fmt.Printf("Time: %s, Precipitation Probability: %d\n", parsedTime.In(jst).Format("2006-01-02 15:04"), pop)
+		}
+	}
+}
+
+func main() {
+	weatherReport, err := fetchWeatherReport()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	processWeatherReport(weatherReport)
 }
