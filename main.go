@@ -51,17 +51,21 @@ func main() {
 		for _, timeSeries := range info.TimeSeries {
 			for _, area := range timeSeries.Areas {
 				if area.Area.Code == "140020" && area.Pops != nil {
-					fmt.Println("Area: ", area.Area.Name)
-					for i, pop := range *area.Pops {
-						popInt, err := strconv.Atoi(pop)
+					for i, popStr := range *area.Pops {
+						pop, err := strconv.Atoi(popStr)
 						if err != nil {
 							fmt.Println("Error converting pop to integer: ", err)
-							continue
+							return
 						}
-						if popInt >= 50 {
-							parsedTime, _ := time.Parse(time.RFC3339, timeSeries.TimeDefines[i])
+						if pop >= 20 {
+							timeDefine := timeSeries.TimeDefines[i]
+							parsedTime, err := time.Parse(time.RFC3339, timeDefine)
+							if err != nil {
+								fmt.Println("Error parsing time: ", err)
+								return
+							}
 							jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-							fmt.Printf("Time: %v, Precipitation Probability: %v\n", parsedTime.In(jst).Format("2006-01-02 15:04"), pop)
+							fmt.Printf("Time: %s, Precipitation Probability: %d\n", parsedTime.In(jst).Format("2006-01-02 15:04"), pop)
 						}
 					}
 				}
