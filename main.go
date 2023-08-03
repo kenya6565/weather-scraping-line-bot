@@ -57,14 +57,19 @@ func processWeatherReport(weatherReport []WeatherInfo) {
 }
 
 func printPrecipProb(area AreaInfo, timeSeries TimeSeriesInfo) {
-	for i, popStr := range *area.Pops {
+	if len(*area.Pops) < 2 || len(timeSeries.TimeDefines) < 2 {
+		// Skip if there is only one or no time and pop values
+		return
+	}
+	for i, popStr := range (*area.Pops)[1:] { // Skip the first pop
 		pop, err := strconv.Atoi(popStr)
 		if err != nil {
 			fmt.Println("Error converting pop to integer: ", err)
 			return
 		}
-		if pop >= 20 {
-			timeDefine := timeSeries.TimeDefines[i]
+		if pop >= 50 {
+			// Skip the first time define and align index with the popped pops
+			timeDefine := timeSeries.TimeDefines[i+1]
 			parsedTime, err := time.Parse(time.RFC3339, timeDefine)
 			if err != nil {
 				fmt.Println("Error parsing time: ", err)
