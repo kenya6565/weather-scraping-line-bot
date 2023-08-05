@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+const YokohamaWestAreaCode = "140020"
+
 type WeatherInfo struct {
 	TimeSeries []TimeSeriesInfo `json:"timeSeries"`
 }
@@ -44,15 +46,25 @@ func fetchWeatherReport() ([]WeatherInfo, error) {
 	return weatherReport, err
 }
 
-func processWeatherReport(weatherReport []WeatherInfo) {
+func filterAreas(weatherReport []WeatherInfo, code string) ([]AreaInfo, []TimeSeriesInfo) {
+	var areas []AreaInfo
+	var timeSeriesInfos []TimeSeriesInfo
 	for _, info := range weatherReport {
 		for _, timeSeries := range info.TimeSeries {
 			for _, area := range timeSeries.Areas {
-				if area.Area.Code == "140020" && area.Pops != nil {
-					printPrecipProb(area, timeSeries)
+				if area.Area.Code == code && area.Pops != nil {
+					areas = append(areas, area)
+					timeSeriesInfos = append(timeSeriesInfos, timeSeries)
 				}
 			}
 		}
+	}
+	return areas, timeSeriesInfos
+}
+
+func processAreaInfos(areas []AreaInfo, timeSeriesInfos []TimeSeriesInfo) {
+	for i, area := range areas {
+		printPrecipProb(area, timeSeriesInfos[i])
 	}
 }
 
@@ -90,5 +102,6 @@ func main() {
 		return
 	}
 
-	processWeatherReport(weatherReport)
+	areas, timeSeriesInfos := filterAreas(weatherReport, YokohamaWestAreaCode)
+	processAreaInfos(areas, timeSeriesInfos)
 }
