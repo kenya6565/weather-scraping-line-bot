@@ -10,6 +10,7 @@ import (
 )
 
 const YokohamaWestAreaCode = "140020"
+const JmaApiEndpoint = "https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json"
 
 type WeatherInfo struct {
 	TimeSeries []TimeSeriesInfo `json:"timeSeries"`
@@ -30,7 +31,7 @@ type AreaInfo struct {
 }
 
 func fetchWeatherReport() ([]WeatherInfo, error) {
-	resp, err := http.Get("https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json")
+	resp, err := http.Get(JmaApiEndpoint)
 	if err != nil {
 		return nil, err
 	}
