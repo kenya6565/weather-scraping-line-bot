@@ -1,14 +1,19 @@
 package line
 
 import (
+	"context"
 	"log"
 	"os"
 
+	"cloud.google.com/go/firestore"
 	"github.com/joho/godotenv"
 	"github.com/line/line-bot-sdk-go/linebot"
+	"google.golang.org/api/iterator"
 )
 
-var bot *linebot.Client
+var Bot *linebot.Client
+
+const FirebaseProjectID = "weather-notification-line-dev"
 
 func init() {
 	err := godotenv.Load()
@@ -16,7 +21,7 @@ func init() {
 		log.Fatalf("Error loading .env file")
 	}
 
-	bot, err = linebot.New(
+	Bot, err = linebot.New(
 		os.Getenv("LINE_CHANNEL_SECRET"),
 		os.Getenv("LINE_ACCESS_TOKEN"),
 	)
@@ -25,24 +30,54 @@ func init() {
 	}
 }
 
-var userIds []string
-
 func HandleEvent(event *linebot.Event) {
 	switch event.Type {
 	case linebot.EventTypeFollow:
-		userIds = append(userIds, event.Source.UserID)
+		ctx := context.Background()
+
+		// Firestore clientの作成
+		client, err := firestore.NewClient(ctx, FirebaseProjectID)
+		if err != nil {
+			log.Fatalf("Failed to create client: %v", err)
+		}
+		defer client.Close()
+
+		// Firestoreへの保存処理
+		_, _, err = client.Collection("users").Add(ctx, map[string]interface{}{
+			"userId": event.Source.UserID,
+		})
+		if err != nil {
+			log.Fatalf("Failed adding user: %v", err)
+		}
 	}
 }
 
 func NotifyRain(userId, message string) error {
-	if _, err := bot.PushMessage(userId, linebot.NewTextMessage(message)).Do(); err != nil {
+	if _, err := Bot.PushMessage(userId, linebot.NewTextMessage(message)).Do(); err != nil {
 		return err
 	}
 	return nil
 }
 
 func NotifyAllUsers(message string) {
-	for _, userId := range userIds {
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, FirebaseProjectID)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	defer client.Close()
+
+	iter := client.Collection("users").Documents(ctx)
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to iterate: %v", err)
+		}
+
+		userId := doc.Data()["lineUserId"].(string)
 		NotifyRain(userId, message)
 	}
 }
