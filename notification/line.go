@@ -33,6 +33,8 @@ func init() {
 func HandleEvent(event *linebot.Event) {
 	switch event.Type {
 	case linebot.EventTypeFollow:
+		log.Println("Received follow event!")
+
 		ctx := context.Background()
 
 		// Firestore clientの作成
@@ -47,7 +49,9 @@ func HandleEvent(event *linebot.Event) {
 			"userId": event.Source.UserID,
 		})
 		if err != nil {
-			log.Fatalf("Failed adding user: %v", err)
+			log.Printf("Failed adding user: %v", err)
+		} else {
+			log.Println("Successfully added user to Firestore.")
 		}
 	}
 }
