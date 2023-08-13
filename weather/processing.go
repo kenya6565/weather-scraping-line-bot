@@ -22,35 +22,42 @@ func FilterAreas(weatherReport []WeatherInfo, code string) ([]AreaInfo, []TimeSe
 	return areas, timeSeriesInfos
 }
 
-func ProcessAreaInfos(areas []AreaInfo, timeSeriesInfos []TimeSeriesInfo) {
+func ProcessAreaInfos(areas []AreaInfo, timeSeriesInfos []TimeSeriesInfo) []string {
+	var messages []string
 	for i, area := range areas {
-		PrintPrecipProb(area, timeSeriesInfos[i])
+		messages = append(messages, GeneratePrecipProbMessage(area, timeSeriesInfos[i])...)
 	}
+	return messages
 }
 
-func PrintPrecipProb(area AreaInfo, timeSeries TimeSeriesInfo) {
+func GeneratePrecipProbMessage(area AreaInfo, timeSeries TimeSeriesInfo) []string {
+	var messages []string
+
+	// Skip if there is less than 2 values of arrays in pops and time defines
 	if len(*area.Pops) < 2 || len(timeSeries.TimeDefines) < 2 {
-		// Skip if there is less than 2 values of arrays in pops and time defines
-		return
+		return messages
 	}
+
 	for i, popStr := range (*area.Pops)[1:] { // Skip the first pop
 		// converting string to int
 		pop, err := strconv.Atoi(popStr)
 		if err != nil {
 			fmt.Println("Error converting pop to integer: ", err)
-			return
+			continue
 		}
-		if pop >= 50 {
+		if pop >= 20 {
 			// Skip the first time define
 			timeDefine := timeSeries.TimeDefines[i+1]
 			// converting to time.Time type
 			parsedTime, err := time.Parse(time.RFC3339, timeDefine)
 			if err != nil {
 				fmt.Println("Error parsing time: ", err)
-				return
+				continue
 			}
 			jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-			fmt.Printf("Time: %s, Precipitation Probability: %d\n", parsedTime.In(jst).Format("2006-01-02 15:04"), pop)
+			message := fmt.Sprintf("Time: %s, Precipitation Probability: %d", parsedTime.In(jst).Format("2006-01-02 15:04"), pop)
+			messages = append(messages, message)
 		}
 	}
+	return messages
 }
