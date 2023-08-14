@@ -4,15 +4,17 @@ import (
 	"context"
 	"log"
 	"os"
+	"strings"
+	"weather-scraping-line-bot/weather"
 
 	"cloud.google.com/go/firestore"
 	"github.com/joho/godotenv"
 	"github.com/line/line-bot-sdk-go/linebot"
-	"google.golang.org/api/iterator"
 )
 
 var Bot *linebot.Client
 
+const YOKOHAMAWESTAREACODE = "140020"
 const FirebaseProjectID = "weather-notification-line-dev"
 
 func init() {
@@ -50,41 +52,31 @@ func HandleEvent(event *linebot.Event) {
 			log.Fatalf("Failed adding user: %v", err)
 		}
 
-		// 新たにフォローされた際の通知メッセージ送信処理
+		// フォロー通知
 		welcomeMessage := "Thank you for following our bot! We will provide you with weather updates."
 		if _, err := Bot.PushMessage(event.Source.UserID, linebot.NewTextMessage(welcomeMessage)).Do(); err != nil {
 			log.Println("Failed to send welcome message:", err)
 		}
 
+		// 天気予報の通知
+		NotifyWeatherToUser(event.Source.UserID)
 	}
 }
 
-func NotifyRain(userId, message string) error {
-	if _, err := Bot.PushMessage(userId, linebot.NewTextMessage(message)).Do(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func NotifyAllUsers(message string) {
-	ctx := context.Background()
-	client, err := firestore.NewClient(ctx, FirebaseProjectID)
+func NotifyWeatherToUser(userId string) {
+	weatherReport, err := weather.FetchWeatherReport()
 	if err != nil {
-		log.Fatalf("Failed to create client: %v", err)
+		log.Println("Failed to fetch weather report:", err)
+		return
 	}
-	defer client.Close()
 
-	iter := client.Collection("users").Documents(ctx)
-	for {
-		doc, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			log.Fatalf("Failed to iterate: %v", err)
-		}
+	areas, timeSeriesInfos := weather.FilterAreas(weatherReport, YOKOHAMAWESTAREACODE)
+	messages := weather.ProcessAreaInfos(areas, timeSeriesInfos) // この関数は文字列のスライスを返すように修正する必要があります
 
-		userId := doc.Data()["lineUserId"].(string)
-		NotifyRain(userId, message)
+	// メッセージを結合して1つのメッセージとして送信
+	combinedMessage := strings.Join(messages, "\n")
+
+	if _, err := Bot.PushMessage(userId, linebot.NewTextMessage(combinedMessage)).Do(); err != nil {
+		log.Println("Failed to send weather notification:", err)
 	}
 }
