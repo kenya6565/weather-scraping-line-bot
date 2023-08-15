@@ -33,29 +33,46 @@ func ProcessAreaInfos(areas []AreaInfo, timeSeriesInfos []TimeSeriesInfo) []stri
 func GeneratePrecipProbMessage(area AreaInfo, timeSeries TimeSeriesInfo) []string {
 	var messages []string
 
-	// Skip if there is less than 2 values of arrays in pops and time defines
 	if len(*area.Pops) < 2 || len(timeSeries.TimeDefines) < 2 {
 		return messages
 	}
 
-	for i, popStr := range (*area.Pops)[1:] { // Skip the first pop
-		// converting string to int
+	for i, popStr := range (*area.Pops)[1:] {
 		pop, err := strconv.Atoi(popStr)
 		if err != nil {
 			fmt.Println("Error converting pop to integer: ", err)
 			continue
 		}
 		if pop >= 20 {
-			// Skip the first time define
 			timeDefine := timeSeries.TimeDefines[i+1]
-			// converting to time.Time type
 			parsedTime, err := time.Parse(time.RFC3339, timeDefine)
 			if err != nil {
 				fmt.Println("Error parsing time: ", err)
 				continue
 			}
+
 			jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-			message := fmt.Sprintf("Time: %s, Precipitation Probability: %d", parsedTime.In(jst).Format("2006-01-02 15:04"), pop)
+			startTime := parsedTime.In(jst)
+			var endTime time.Time
+
+			switch startTime.Hour() {
+			case 0:
+				endTime = startTime.Add(time.Hour * 5).Add(time.Minute * 59)
+			case 6:
+				endTime = startTime.Add(time.Hour * 5).Add(time.Minute * 59)
+			case 12:
+				endTime = startTime.Add(time.Hour * 5).Add(time.Minute * 59)
+			case 18:
+				endTime = startTime.Add(time.Hour * 5).Add(time.Minute * 59)
+			default:
+				// If the hour does not match the above cases, we skip it.
+				continue
+			}
+
+			message := fmt.Sprintf("時間: %s ~ %s, 降水確率: %d%%",
+				startTime.Format("2006-01-02 15:04"),
+				endTime.Format("15:04"),
+				pop)
 			messages = append(messages, message)
 		}
 	}
