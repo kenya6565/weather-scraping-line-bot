@@ -6,3 +6,4 @@ function-source.zip
 /terraform/tfplan
 /terraform/terraform.tfstate.backup
 /terraform/.terraform.lock.hcl
+.DS_Store
