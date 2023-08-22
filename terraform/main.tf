@@ -2,13 +2,13 @@
 resource "google_cloudfunctions_function" "weather_notifier" {
   name                  = "weather-notifier"
   available_memory_mb   = 256
-  runtime               = "go113" # Goのランタイム。必要に応じてバージョンを変更
+  runtime               = "go113"
   source_archive_bucket = google_storage_bucket.cloudfunctions_bucket.name
   source_archive_object = google_storage_bucket_object.source_archive.name
 
   trigger_http = true
 
-  entry_point = "WeatherNotifierFunction" # 関数のエントリーポイント。変更する場合はここを修正
+  entry_point = "WeatherNotifierFunction"
 }
 
 resource "google_storage_bucket" "cloudfunctions_bucket" {
