@@ -1,14 +1,23 @@
-# Cloud Functionsのリソース
+# Cloud SchedulerからのHTTPリクエストを発火点にAPIを叩いて通知を行うCloud Functions
 resource "google_cloudfunctions_function" "weather_notifier" {
   name                  = "weather-notifier"
   available_memory_mb   = 256
   runtime               = "go113"
   source_archive_bucket = google_storage_bucket.cloudfunctions_bucket.name
   source_archive_object = google_storage_bucket_object.source_archive.name
+  trigger_http          = true
+  entry_point           = "WeatherNotifierFunction"
+}
 
-  trigger_http = true
-
-  entry_point = "WeatherNotifierFunction"
+# LINE webhookからのPOSTリクエストを発火点にフォローなどのイベントがあった際に通知を行うCloud Functions
+resource "google_cloudfunctions_function" "line_webhook" {
+  name                  = "line-webhook"
+  available_memory_mb   = 256
+  runtime               = "go113"
+  source_archive_bucket = google_storage_bucket.cloudfunctions_bucket.name
+  source_archive_object = google_storage_bucket_object.source_archive.name
+  trigger_http          = true
+  entry_point           = "LineWebhookFunction"
 }
 
 resource "google_storage_bucket" "cloudfunctions_bucket" {
@@ -25,8 +34,7 @@ resource "google_storage_bucket_object" "source_archive" {
 # Cloud Schedulerのジョブ
 resource "google_cloud_scheduler_job" "daily_weather_check" {
   name     = "daily-weather-check"
-  schedule = "0 0 * * *" # 毎日0時に実行
-
+  schedule = "0 0 * * *"
   http_target {
     uri                  = google_cloudfunctions_function.weather_notifier.https_trigger_url
     http_method          = "GET"
