@@ -8,8 +8,6 @@ resource "google_cloudfunctions_function" "weather_notifier" {
   trigger_http          = true
   entry_point           = "WeatherNotifierFunction"
   environment_variables = {
-    FUNCTION_SIGNATURE_TYPE = "http"
-    FUNCTION_TARGET         = "WeatherNotifierFunction"
   }
 }
 
@@ -23,8 +21,6 @@ resource "google_cloudfunctions_function" "line_webhook" {
   trigger_http          = true
   entry_point           = "LineWebhookFunction"
   environment_variables = {
-    FUNCTION_SIGNATURE_TYPE = "http"
-    FUNCTION_TARGET         = "LineWebhookFunction"
   }
 }
 
