@@ -1,4 +1,4 @@
-package cloud_functions
+package line_webhook
 
 import (
 	"fmt"

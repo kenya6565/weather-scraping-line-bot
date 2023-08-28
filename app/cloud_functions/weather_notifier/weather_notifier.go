@@ -1,4 +1,4 @@
-package cloud_functions
+package weather_notifier
 
 import (
     "fmt"
