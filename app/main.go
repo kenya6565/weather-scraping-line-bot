@@ -1,6 +1,6 @@
 package main
 
-import "weather-scraping-line-bot/server"
+import "github.com/kenya6565/weather-scraping-line-bot/app/server"
 
 // server "weather-scraping-line-bot/server"
 

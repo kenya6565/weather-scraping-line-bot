@@ -3,7 +3,7 @@ package line_webhook
 import (
 	"fmt"
 	"net/http"
-	notification "weather-scraping-line-bot/notification"
+	notification "github.com/kenya6565/weather-scraping-line-bot/app/notification"
 )
 
 func LineWebhookFunction(w http.ResponseWriter, r *http.Request) {

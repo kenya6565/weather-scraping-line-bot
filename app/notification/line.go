@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
-	"weather-scraping-line-bot/weather"
+	"github.com/kenya6565/weather-scraping-line-bot/app/weather"
 
 	"cloud.google.com/go/firestore"
 	"github.com/joho/godotenv"
