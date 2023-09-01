@@ -1,3 +1,14 @@
+resource "google_storage_bucket" "cloudfunctions_bucket" {
+  name     = "weather-notifier-functions-bucket"
+  location = "us-central1"
+}
+
+resource "google_storage_bucket_object" "source_archive" {
+  name   = "app.zip"
+  bucket = google_storage_bucket.cloudfunctions_bucket.name
+  source = "${path.module}/../app.zip"
+}
+
 # Cloud SchedulerからのHTTPリクエストを発火点にAPIを叩いて通知を行うCloud Functions
 resource "google_cloudfunctions_function" "weather_notifier" {
   name                  = "weather-notifier"
@@ -22,17 +33,6 @@ resource "google_cloudfunctions_function" "line_webhook" {
   entry_point           = "LineWebhookFunction"
   environment_variables = {
   }
-}
-
-resource "google_storage_bucket" "cloudfunctions_bucket" {
-  name     = "weather-notifier-functions-bucket"
-  location = "us-central1"
-}
-
-resource "google_storage_bucket_object" "source_archive" {
-  name   = "function-source.zip"
-  bucket = google_storage_bucket.cloudfunctions_bucket.name
-  source = "${path.module}/../function-source.zip"
 }
 
 # Cloud Schedulerのジョブ
