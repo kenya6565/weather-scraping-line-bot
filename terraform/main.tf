@@ -6,7 +6,7 @@ resource "google_storage_bucket" "cloudfunctions_bucket" {
 resource "google_storage_bucket_object" "source_archive" {
   name   = "app.zip"
   bucket = google_storage_bucket.cloudfunctions_bucket.name
-  source = "${path.module}/../app.zip"
+  source = "${path.module}/../cloud_functions/cloud_functions.zip"
 }
 
 # Cloud SchedulerからのHTTPリクエストを発火点にAPIを叩いて通知を行うCloud Functions
