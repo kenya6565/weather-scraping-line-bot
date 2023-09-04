@@ -1,4 +1,4 @@
-package weather_notifier
+package main
 
 import (
     "fmt"
