@@ -1,4 +1,4 @@
-package main
+package a
 
 import "github.com/kenya6565/weather-scraping-line-bot/app/server"
 
