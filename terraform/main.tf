@@ -6,12 +6,12 @@ resource "google_storage_bucket" "cloudfunctions_bucket" {
 resource "google_storage_bucket_object" "source_archive" {
   name   = "cloud_functions.zip"
   bucket = google_storage_bucket.cloudfunctions_bucket.name
-  source = "${path.module}/../app/cloud_functions.zip"
+  source = "${path.module}/../app/workspace/serverless_function_source_code/cloud_functions.zip"
 }
 
 # Cloud SchedulerからのHTTPリクエストを発火点にAPIを叩いて通知を行うCloud Functions
 resource "google_cloudfunctions_function" "weather_notifier" {
-  name                  = "weather-notifier"
+  name                  = "WeatherNotifierFunction"
   available_memory_mb   = 256
   runtime               = "go120"
   source_archive_bucket = google_storage_bucket.cloudfunctions_bucket.name
@@ -24,7 +24,7 @@ resource "google_cloudfunctions_function" "weather_notifier" {
 
 # LINE webhookからのPOSTリクエストを発火点にフォローなどのイベントがあった際に通知を行うCloud Functions
 resource "google_cloudfunctions_function" "line_webhook" {
-  name                  = "line-webhook"
+  name                  = "LineWebhookFunction"
   available_memory_mb   = 256
   runtime               = "go120"
   source_archive_bucket = google_storage_bucket.cloudfunctions_bucket.name
