@@ -1,9 +1,11 @@
 /app/.env
-/terraform/terraform.tfvars
-function-source.zip
+/app/bin/
+
 /terraform/.terraform/
 /terraform/terraform.tfstate
 /terraform/tfplan
 /terraform/terraform.tfstate.backup
 /terraform/.terraform.lock.hcl
+/terraform/terraform.tfvars
+
 .DS_Store
