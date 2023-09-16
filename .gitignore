@@ -1,4 +1,4 @@
-/app/.env
+/app/cmd/.env
 /app/bin/
 
 /terraform/.terraform/
