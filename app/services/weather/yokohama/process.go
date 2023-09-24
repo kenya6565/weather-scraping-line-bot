@@ -6,11 +6,12 @@ import (
 	"io"
 	"strconv"
 	"time"
+	"github.com/kenya6565/weather-scraping-line-bot/app/services/weather"
 )
 
-func FilterAreas(weatherReport []WeatherInfo, code string) ([]AreaInfo, []TimeSeriesInfo) {
-	var areas []AreaInfo
-	var timeSeriesInfos []TimeSeriesInfo
+func FilterAreas(weatherReport []weather.WeatherInfo, code string) ([]weather.AreaInfo, []weather.TimeSeriesInfo) {
+	var areas []weather.AreaInfo
+	var timeSeriesInfos []weather.TimeSeriesInfo
 	for _, info := range weatherReport {
 		for _, timeSeries := range info.TimeSeries {
 			for _, area := range timeSeries.Areas {
@@ -24,7 +25,7 @@ func FilterAreas(weatherReport []WeatherInfo, code string) ([]AreaInfo, []TimeSe
 	return areas, timeSeriesInfos
 }
 
-func ProcessAreaInfos(areas []AreaInfo, timeSeriesInfos []TimeSeriesInfo) []string {
+func ProcessAreaInfos(areas []weather.AreaInfo, timeSeriesInfos []weather.TimeSeriesInfo) []string {
 	var messages []string
 	for i, area := range areas {
 		messages = append(messages, GeneratePrecipProbMessage(area, timeSeriesInfos[i])...)
@@ -32,7 +33,7 @@ func ProcessAreaInfos(areas []AreaInfo, timeSeriesInfos []TimeSeriesInfo) []stri
 	return messages
 }
 
-func GeneratePrecipProbMessage(area AreaInfo, timeSeries TimeSeriesInfo) []string {
+func GeneratePrecipProbMessage(area weather.AreaInfo, timeSeries weather.TimeSeriesInfo) []string {
 	var messages []string
 
 	if len(*area.Pops) < 2 || len(timeSeries.TimeDefines) < 2 {
@@ -82,13 +83,13 @@ func GeneratePrecipProbMessage(area AreaInfo, timeSeries TimeSeriesInfo) []strin
 }
 
 // ProcessWeatherResponse processes the HTTP response body from the JMA API.
-func ProcessWeatherResponse(body io.Reader) ([]WeatherInfo, error) {
+func ProcessWeatherResponse(body io.Reader) ([]weather.WeatherInfo, error) {
 	data, err := io.ReadAll(body)
 	if err != nil {
 		return nil, err
 	}
 
-	var weatherReport []WeatherInfo
+	var weatherReport []weather.WeatherInfo
 	err = json.Unmarshal(data, &weatherReport)
 	return weatherReport, err
 }
