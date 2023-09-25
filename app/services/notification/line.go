@@ -7,7 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kenya6565/weather-scraping-line-bot/app/db"
-	"github.com/kenya6565/weather-scraping-line-bot/app/services/weather"
+	yokohama "github.com/kenya6565/weather-scraping-line-bot/app/services/weather/yokohama"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
@@ -63,17 +63,17 @@ func HandleEvent(event *linebot.Event) {
 // and then sends this message to the provided user ID.
 func NotifyWeatherToUser(userId string) {
 	// Fetch the latest weather report.
-	weatherReport, err := weather.FetchWeatherReport()
+	weatherReport, err := yokohama.FetchDataFromJMA()
 	if err != nil {
 		log.Println("Failed to fetch weather report:", err)
 		return
 	}
 
 	// Filter out relevant weather information based on the Yokohama West area code.
-	areas, timeSeriesInfos := weather.FilterAreas(weatherReport, YOKOHAMAWESTAREACODE)
+	areas, timeSeriesInfos := yokohama.FilterAreas(weatherReport, YOKOHAMAWESTAREACODE)
 
 	// Process the fetched weather information to generate user-friendly messages.
-	messages := weather.ProcessAreaInfos(areas, timeSeriesInfos)
+	messages := yokohama.ProcessAreaInfos(areas, timeSeriesInfos)
 
 	// Combine the generated messages into a single message.
 	combinedMessage := strings.Join(messages, "\n")
