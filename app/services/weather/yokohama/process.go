@@ -1,17 +1,16 @@
-package weather
+package yokohama
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"strconv"
 	"time"
-	"github.com/kenya6565/weather-scraping-line-bot/app/services/weather"
+
+	"github.com/kenya6565/weather-scraping-line-bot/app/models"
 )
 
-func FilterAreas(weatherReport []weather.WeatherInfo, code string) ([]weather.AreaInfo, []weather.TimeSeriesInfo) {
-	var areas []weather.AreaInfo
-	var timeSeriesInfos []weather.TimeSeriesInfo
+func FilterAreas(weatherReport []models.WeatherInfo, code string) ([]models.AreaInfo, []models.TimeSeriesInfo) {
+	var areas []models.AreaInfo
+	var timeSeriesInfos []models.TimeSeriesInfo
 	for _, info := range weatherReport {
 		for _, timeSeries := range info.TimeSeries {
 			for _, area := range timeSeries.Areas {
@@ -25,7 +24,7 @@ func FilterAreas(weatherReport []weather.WeatherInfo, code string) ([]weather.Ar
 	return areas, timeSeriesInfos
 }
 
-func ProcessAreaInfos(areas []weather.AreaInfo, timeSeriesInfos []weather.TimeSeriesInfo) []string {
+func ProcessAreaInfos(areas []models.AreaInfo, timeSeriesInfos []models.TimeSeriesInfo) []string {
 	var messages []string
 	for i, area := range areas {
 		messages = append(messages, GeneratePrecipProbMessage(area, timeSeriesInfos[i])...)
@@ -33,7 +32,7 @@ func ProcessAreaInfos(areas []weather.AreaInfo, timeSeriesInfos []weather.TimeSe
 	return messages
 }
 
-func GeneratePrecipProbMessage(area weather.AreaInfo, timeSeries weather.TimeSeriesInfo) []string {
+func GeneratePrecipProbMessage(area models.AreaInfo, timeSeries models.TimeSeriesInfo) []string {
 	var messages []string
 
 	if len(*area.Pops) < 2 || len(timeSeries.TimeDefines) < 2 {
@@ -80,16 +79,4 @@ func GeneratePrecipProbMessage(area weather.AreaInfo, timeSeries weather.TimeSer
 		}
 	}
 	return messages
-}
-
-// ProcessWeatherResponse processes the HTTP response body from the JMA API.
-func ProcessWeatherResponse(body io.Reader) ([]weather.WeatherInfo, error) {
-	data, err := io.ReadAll(body)
-	if err != nil {
-		return nil, err
-	}
-
-	var weatherReport []weather.WeatherInfo
-	err = json.Unmarshal(data, &weatherReport)
-	return weatherReport, err
 }
