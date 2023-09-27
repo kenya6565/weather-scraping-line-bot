@@ -1,4 +1,4 @@
-package weather
+package models
 
 type WeatherInfo struct {
 	TimeSeries []TimeSeriesInfo `json:"timeSeries"`
