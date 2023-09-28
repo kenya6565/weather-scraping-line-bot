@@ -39,13 +39,16 @@ func GeneratePrecipProbMessage(area models.AreaInfo, timeSeries models.TimeSerie
 		return messages
 	}
 
+	noMessageGenerated := true
+
 	for i, popStr := range (*area.Pops)[1:] {
 		pop, err := strconv.Atoi(popStr)
 		if err != nil {
 			fmt.Println("Error converting pop to integer: ", err)
 			continue
 		}
-		if pop >= 20 {
+		if pop > 20 {
+			noMessageGenerated = false
 			timeDefine := timeSeries.TimeDefines[i+1]
 			parsedTime, err := time.Parse(time.RFC3339, timeDefine)
 			if err != nil {
@@ -77,6 +80,10 @@ func GeneratePrecipProbMessage(area models.AreaInfo, timeSeries models.TimeSerie
 				pop)
 			messages = append(messages, message)
 		}
+	}
+	if noMessageGenerated {
+		// if all precipitation probabilities do not meet the condition to line, output debug log
+		fmt.Println("All precipitation probabilities are less than 50%.")
 	}
 	return messages
 }
