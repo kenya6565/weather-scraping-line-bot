@@ -7,6 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kenya6565/weather-scraping-line-bot/app/db"
+	weather "github.com/kenya6565/weather-scraping-line-bot/app/services/weather"
 	yokohama "github.com/kenya6565/weather-scraping-line-bot/app/services/weather/yokohama"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
@@ -62,8 +63,17 @@ func HandleEvent(event *linebot.Event) {
 // It fetches the latest weather report, processes it to generate a user-friendly message,
 // and then sends this message to the provided user ID.
 func NotifyWeatherToUser(userId string) {
+	city := "yokohama" // この部分を変更するだけで異なる都市の天気情報を取得可能
+
+	processor, err := weather.GetWeatherProcessorForCity(city)
+	if err != nil {
+		log.Println("Failed to get weather processor for city:", err)
+		return
+	}
+
 	// Fetch the latest weather report.
-	weatherReport, err := yokohama.FetchDataFromJMA()
+	weatherReport, err := processor.FetchDataFromJMA()
+	log.Println("weatherReport:", weatherReport)
 	if err != nil {
 		log.Println("Failed to fetch weather report:", err)
 		return
@@ -74,6 +84,12 @@ func NotifyWeatherToUser(userId string) {
 
 	// Process the fetched weather information to generate user-friendly messages.
 	messages := yokohama.ProcessAreaInfos(areas, timeSeriesInfos)
+
+	// if all precipitation probabilities do not meet the condition to line, log and return
+	if len(messages) == 0 {
+		log.Println("All precipitation probabilities are less than 50%. No notification sent.")
+		return
+	}
 
 	// Combine the generated messages into a single message.
 	combinedMessage := strings.Join(messages, "\n")
