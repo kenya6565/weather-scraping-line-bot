@@ -2,9 +2,10 @@ package weather
 
 // WeatherProcessor defines the methods required for processing weather information for cities.
 type WeatherProcessor interface {
-	FetchDataFromJMA() (WeatherData, error)
-	Process(data WeatherData) ProcessedWeatherInfo
+	FetchDataFromJMA() ([]WeatherInfo, error)
+	FilterAreas([]WeatherInfo) ([]AreaInfo, []TimeSeriesInfo)
 }
+
 
 // WeatherData represents raw weather data for a city.
 type WeatherData struct {
