@@ -9,6 +9,12 @@ type TimeSeriesInfo struct {
 	TimeDefines []string   `json:"timeDefines"`
 }
 
+type AreaInfoInterface interface {
+	GetCode() string
+	GetPops() *[]string
+}
+
+// ここの中身のみ型が都市によって変わる可能性あり
 type AreaInfo struct {
 	Area struct {
 		Name string `json:"name"`
