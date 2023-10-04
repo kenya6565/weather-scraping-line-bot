@@ -80,7 +80,7 @@ func NotifyWeatherToUser(userId string) {
 	}
 
 	// Filter out relevant weather information based on the Yokohama West area code.
-	areas, timeSeriesInfos := yokohama.FilterAreas(weatherReport, YOKOHAMAWESTAREACODE)
+	areas, timeSeriesInfos := processor.FilterAreas(weatherReport)
 
 	// Process the fetched weather information to generate user-friendly messages.
 	messages := yokohama.ProcessAreaInfos(areas, timeSeriesInfos)
