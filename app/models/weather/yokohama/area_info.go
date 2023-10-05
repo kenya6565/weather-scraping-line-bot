@@ -1,4 +1,4 @@
-package models
+package yokohama
 
 type YokohamaAreaInfo struct {
 	Area struct {
