@@ -3,7 +3,7 @@ package weather
 import (
 	"errors"
 
-	yokohama "github.com/kenya6565/weather-scraping-line-bot/app/services/weather/yokohama"
+	"github.com/kenya6565/weather-scraping-line-bot/app/services/weather/yokohama"
 )
 
 // 構造体の定義はfactory.goでは行わない。
