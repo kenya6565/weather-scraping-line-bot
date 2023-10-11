@@ -1,89 +1,64 @@
 package yokohama
 
 import (
-	"fmt"
-	"strconv"
-	"time"
-
-	"github.com/kenya6565/weather-scraping-line-bot/app/models"
+	weather "github.com/kenya6565/weather-scraping-line-bot/app/models/weather"
 )
 
-func FilterAreas(weatherReport []models.WeatherInfo, code string) ([]models.AreaInfo, []models.TimeSeriesInfo) {
-	var areas []models.AreaInfo
-	var timeSeriesInfos []models.TimeSeriesInfo
-	for _, info := range weatherReport {
-		for _, timeSeries := range info.TimeSeries {
-			for _, area := range timeSeries.Areas {
-				if area.Area.Code == code && area.Pops != nil {
-					areas = append(areas, area)
-					timeSeriesInfos = append(timeSeriesInfos, timeSeries)
-				}
+//  ### HERE IS JSON RESPONSE FROM API
+// {
+// 	"timeSeries": [
+// 		# 1
+// 		{
+// 			"timeDefines": [
+// 				"2023-07-27T18:00:00+09:00",
+// 				"2023-07-28T00:00:00+09:00",
+// 				"2023-07-28T06:00:00+09:00",
+// 				"2023-07-28T12:00:00+09:00",
+// 				"2023-07-28T18:00:00+09:00"
+// 			],
+// 			# 2
+// 			"areas": [
+// 				{
+// 					# 3
+// 					"area": {
+// 						"name": "西部",
+// 						# 4
+// 						"code": "140020"
+// 					},
+// 					# 3
+// 					"pops": [
+// 						"30",
+// 						"10",
+// 						"10",
+// 						"20",
+// 						"20"
+// 					]
+// 				}
+// 			]
+// 		}
+// 	]
+// }
+
+func (y *YokohamaWeatherProcessor) FilterAreas(weatherReport weather.WeatherInfo) ([]weather.AreaInfoInterface, []weather.TimeSeriesInfo) {
+	var areas []weather.AreaInfoInterface
+	var timeSeriesInfos []weather.TimeSeriesInfo
+
+	for _, timeSeries := range weatherReport.TimeSeries {
+		for _, area := range timeSeries.Areas {
+			if area.GetCode() == y.AreaCode && area.GetPops() != nil {
+				areas = append(areas, area)
+				timeSeriesInfos = append(timeSeriesInfos, timeSeries)
 			}
 		}
 	}
+
 	return areas, timeSeriesInfos
 }
 
-func ProcessAreaInfos(areas []models.AreaInfo, timeSeriesInfos []models.TimeSeriesInfo) []string {
+func (y *YokohamaWeatherProcessor) ProcessAreaInfos(areas []weather.AreaInfoInterface, timeSeriesInfos []weather.TimeSeriesInfo) []string {
 	var messages []string
 	for i, area := range areas {
 		messages = append(messages, GeneratePrecipProbMessage(area, timeSeriesInfos[i])...)
-	}
-	return messages
-}
-
-func GeneratePrecipProbMessage(area models.AreaInfo, timeSeries models.TimeSeriesInfo) []string {
-	var messages []string
-
-	if len(*area.Pops) < 2 || len(timeSeries.TimeDefines) < 2 {
-		return messages
-	}
-
-	noMessageGenerated := true
-
-	for i, popStr := range (*area.Pops)[1:] {
-		pop, err := strconv.Atoi(popStr)
-		if err != nil {
-			fmt.Println("Error converting pop to integer: ", err)
-			continue
-		}
-		if pop > 20 {
-			noMessageGenerated = false
-			timeDefine := timeSeries.TimeDefines[i+1]
-			parsedTime, err := time.Parse(time.RFC3339, timeDefine)
-			if err != nil {
-				fmt.Println("Error parsing time: ", err)
-				continue
-			}
-
-			jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-			startTime := parsedTime.In(jst)
-			var endTime time.Time
-
-			switch startTime.Hour() {
-			case 0:
-				endTime = startTime.Add(time.Hour * 5).Add(time.Minute * 59)
-			case 6:
-				endTime = startTime.Add(time.Hour * 5).Add(time.Minute * 59)
-			case 12:
-				endTime = startTime.Add(time.Hour * 5).Add(time.Minute * 59)
-			case 18:
-				endTime = startTime.Add(time.Hour * 5).Add(time.Minute * 59)
-			default:
-				// If the hour does not match the above cases, we skip it.
-				continue
-			}
-
-			message := fmt.Sprintf("時間: %s ~ %s, 降水確率: %d%%",
-				startTime.Format("2006-01-02 15:04"),
-				endTime.Format("15:04"),
-				pop)
-			messages = append(messages, message)
-		}
-	}
-	if noMessageGenerated {
-		// if all precipitation probabilities do not meet the condition to line, output debug log
-		fmt.Println("All precipitation probabilities are less than 50%.")
 	}
 	return messages
 }
