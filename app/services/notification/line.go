@@ -8,15 +8,11 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kenya6565/weather-scraping-line-bot/app/db"
 	weather "github.com/kenya6565/weather-scraping-line-bot/app/services/weather"
-	yokohama "github.com/kenya6565/weather-scraping-line-bot/app/services/weather/yokohama"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 // Bot represents the global LINE Bot client instance.
 var Bot *linebot.Client
-
-// YOKOHAMAWESTAREACODE is a constant defining the area code for Yokohama West for weather information.
-const YOKOHAMAWESTAREACODE = "140020"
 
 // init is a special Go function that is executed upon package initialization.
 // This function is responsible for loading the .env configuration and initializing the LINE Bot client.
@@ -63,7 +59,7 @@ func HandleEvent(event *linebot.Event) {
 // It fetches the latest weather report, processes it to generate a user-friendly message,
 // and then sends this message to the provided user ID.
 func NotifyWeatherToUser(userId string) {
-	city := "yokohama" // この部分を変更するだけで異なる都市の天気情報を取得可能
+	city := "yokohama"
 
 	processor, err := weather.GetWeatherProcessorForCity(city)
 	if err != nil {
@@ -71,30 +67,22 @@ func NotifyWeatherToUser(userId string) {
 		return
 	}
 
-	// Fetch the latest weather report.
 	weatherReport, err := processor.FetchDataFromJMA()
-	log.Println("weatherReport:", weatherReport)
 	if err != nil {
 		log.Println("Failed to fetch weather report:", err)
 		return
 	}
+	log.Println("weatherReport:", weatherReport)
 
-	// Filter out relevant weather information based on the Yokohama West area code.
-	areas, timeSeriesInfos := processor.FilterAreas(weatherReport)
+	areas, timeSeriesInfos := processor.FilterAreas(*weatherReport)
+	messages := processor.ProcessAreaInfos(areas, timeSeriesInfos)
 
-	// Process the fetched weather information to generate user-friendly messages.
-	messages := yokohama.ProcessAreaInfos(areas, timeSeriesInfos)
-
-	// if all precipitation probabilities do not meet the condition to line, log and return
 	if len(messages) == 0 {
 		log.Println("All precipitation probabilities are less than 50%. No notification sent.")
 		return
 	}
 
-	// Combine the generated messages into a single message.
 	combinedMessage := strings.Join(messages, "\n")
-
-	// Send the combined weather message to the user.
 	if _, err := Bot.PushMessage(userId, linebot.NewTextMessage(combinedMessage)).Do(); err != nil {
 		log.Println("Failed to send weather notification:", err)
 	}
