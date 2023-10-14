@@ -7,6 +7,6 @@ import (
 // WeatherProcessor defines the methods required for processing weather information for cities.
 type WeatherProcessor interface {
 	FetchDataFromJMA() ([]weather.WeatherInfo, error)
-	FilterAreas([]weather.WeatherInfo) ([]weather.AreaInfoInterface, []weather.TimeSeriesInfo)
-	ProcessAreaInfos([]weather.AreaInfoInterface, []weather.TimeSeriesInfo) []string
+	FilterAreas([]weather.WeatherInfo) ([]weather.AreaInfo, []weather.TimeSeriesInfo)
+	ProcessAreaInfos([]weather.AreaInfo, []weather.TimeSeriesInfo) []string
 }
