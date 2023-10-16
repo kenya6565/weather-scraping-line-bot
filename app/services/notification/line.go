@@ -2,36 +2,13 @@ package line
 
 import (
 	"log"
-	"os"
 	"strings"
 
-	"github.com/joho/godotenv"
 	"github.com/kenya6565/weather-scraping-line-bot/app/db"
 	weather "github.com/kenya6565/weather-scraping-line-bot/app/services/weather"
+	config "github.com/kenya6565/weather-scraping-line-bot/app/utils"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
-
-// Bot represents the global LINE Bot client instance.
-var Bot *linebot.Client
-
-// init is a special Go function that is executed upon package initialization.
-// This function is responsible for loading the .env configuration and initializing the LINE Bot client.
-func init() {
-	// Load environment variables from .env file.
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
-	// Initialize the LINE Bot client using credentials from environment variables.
-	Bot, err = linebot.New(
-		os.Getenv("LINE_CHANNEL_SECRET"),
-		os.Getenv("LINE_ACCESS_TOKEN"),
-	)
-	if err != nil {
-		log.Fatalf("Failed to create LINE Bot client: %v", err)
-	}
-}
 
 // HandleEvent handles incoming Line bot events. It performs actions based on the event type.
 // Currently, it supports 'follow' events where a user starts following the bot.
@@ -46,7 +23,7 @@ func HandleEvent(event *linebot.Event) {
 
 		// Send a welcome message to the user.
 		welcomeMessage := "Thank you for following our bot! We will provide you with weather updates."
-		if _, err := Bot.PushMessage(event.Source.UserID, linebot.NewTextMessage(welcomeMessage)).Do(); err != nil {
+		if _, err := config.Bot.PushMessage(event.Source.UserID, linebot.NewTextMessage(welcomeMessage)).Do(); err != nil {
 			log.Println("Failed to send welcome message:", err)
 		}
 
@@ -74,7 +51,7 @@ func NotifyWeatherToUser(userId string) {
 	}
 	log.Println("weatherReport:", weatherReport)
 
-	areas, timeSeriesInfos := processor.FilterAreas(*weatherReport)
+	areas, timeSeriesInfos := processor.FilterAreas(weatherReport)
 	messages := processor.ProcessAreaInfos(areas, timeSeriesInfos)
 
 	if len(messages) == 0 {
@@ -83,7 +60,7 @@ func NotifyWeatherToUser(userId string) {
 	}
 
 	combinedMessage := strings.Join(messages, "\n")
-	if _, err := Bot.PushMessage(userId, linebot.NewTextMessage(combinedMessage)).Do(); err != nil {
+	if _, err := config.Bot.PushMessage(userId, linebot.NewTextMessage(combinedMessage)).Do(); err != nil {
 		log.Println("Failed to send weather notification:", err)
 	}
 }
