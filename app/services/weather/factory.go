@@ -12,7 +12,7 @@ func GetWeatherProcessorForCity(city string) (WeatherProcessor, error) {
 	case "yokohama":
 		// Create a new instance of YokohamaWeatherProcessor
 		return yokohama.NewYokohamaWeatherProcessor(), nil
-	// 他の都市も必要に応じて追加する
+	// TODO: 他の都市も必要に応じて追加する
 	default:
 		return nil, errors.New("unknown city")
 	}
