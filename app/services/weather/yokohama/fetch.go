@@ -2,9 +2,11 @@ package yokohama
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
+	model "github.com/kenya6565/weather-scraping-line-bot/app/model"
 )
 
 type YokohamaWeatherProcessor struct {
@@ -12,23 +14,34 @@ type YokohamaWeatherProcessor struct {
 	AreaCode       string
 }
 
-// FetchDataFromJma makes a GET request to the JMA API, reads the response body, and returns it.
-func (y *YokohamaWeatherProcessor) FetchDataFromJMA() ([]WeatherInfo, error) {
+// 構造体を作るメソッドをyokohama package内で定義しておく
+// そうすることでweather/factory.go内でyokohama packageをimportせずに構造体の定義ができエラーを回避できる。
+func NewYokohamaWeatherProcessor() *YokohamaWeatherProcessor {
+	return &YokohamaWeatherProcessor{
+		JmaApiEndpoint: "https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json",
+		AreaCode:       "140020",
+	}
+}
 
+// FetchDataFromJma makes a GET request to the JMA API, reads the response body, and returns it.
+func (y *YokohamaWeatherProcessor) FetchDataFromJMA() ([]model.WeatherInfo, error) {
 	resp, err := http.Get(y.JmaApiEndpoint)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error making GET request: %w", err)
 	}
-	// Close the response body once all operations on it are done.
-	// This is essential to release resources and avoid potential memory leaks.
 	defer resp.Body.Close()
-	// Read the entire response body and return its contents.
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
-	var weatherReport []WeatherInfo
+	// get API data as slice
+	var weatherReport []model.WeatherInfo
 	err = json.Unmarshal(body, &weatherReport)
-	return weatherReport, err
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling json: %w", err)
+	}
+
+	return weatherReport, nil
 }
