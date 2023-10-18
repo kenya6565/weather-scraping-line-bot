@@ -1,7 +1,7 @@
 package yokohama
 
 import (
-	weather "github.com/kenya6565/weather-scraping-line-bot/app/models/weather"
+	model "github.com/kenya6565/weather-scraping-line-bot/app/model"
 )
 
 //  ### HERE IS JSON RESPONSE FROM API
@@ -39,15 +39,17 @@ import (
 // 	]
 // }
 
-func (y *YokohamaWeatherProcessor) FilterAreas(weatherReport weather.WeatherInfo) ([]weather.AreaInfoInterface, []weather.TimeSeriesInfo) {
-	var areas []weather.AreaInfoInterface
-	var timeSeriesInfos []weather.TimeSeriesInfo
+func (y *YokohamaWeatherProcessor) FilterAreas(weatherReport []model.WeatherInfo) ([]model.AreaInfo, []model.TimeSeriesInfo) {
+	var areas []model.AreaInfo
+	var timeSeriesInfos []model.TimeSeriesInfo
 
-	for _, timeSeries := range weatherReport.TimeSeries {
-		for _, area := range timeSeries.Areas {
-			if area.GetCode() == y.AreaCode && area.GetPops() != nil {
-				areas = append(areas, area)
-				timeSeriesInfos = append(timeSeriesInfos, timeSeries)
+	for _, info := range weatherReport {
+		for _, timeSeries := range info.TimeSeries {
+			for _, area := range timeSeries.Areas {
+				if area.Area.Code == y.AreaCode && area.Pops != nil {
+					areas = append(areas, area)
+					timeSeriesInfos = append(timeSeriesInfos, timeSeries)
+				}
 			}
 		}
 	}
@@ -55,7 +57,7 @@ func (y *YokohamaWeatherProcessor) FilterAreas(weatherReport weather.WeatherInfo
 	return areas, timeSeriesInfos
 }
 
-func (y *YokohamaWeatherProcessor) ProcessAreaInfos(areas []weather.AreaInfoInterface, timeSeriesInfos []weather.TimeSeriesInfo) []string {
+func (y *YokohamaWeatherProcessor) ProcessAreaInfos(areas []model.AreaInfo, timeSeriesInfos []model.TimeSeriesInfo) []string {
 	var messages []string
 	for i, area := range areas {
 		messages = append(messages, GeneratePrecipProbMessage(area, timeSeriesInfos[i])...)
