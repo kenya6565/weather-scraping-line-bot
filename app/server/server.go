@@ -4,13 +4,14 @@ import (
 	"log"
 	"net/http"
 
-	notification "github.com/kenya6565/weather-scraping-line-bot/app/notification"
+	line "github.com/kenya6565/weather-scraping-line-bot/app/services/notification"
+	config "github.com/kenya6565/weather-scraping-line-bot/app/utils" // 追加
 )
 
 func handleCallback(w http.ResponseWriter, r *http.Request) {
-	events, _ := notification.Bot.ParseRequest(r)
+	events, _ := config.Bot.ParseRequest(r)
 	for _, event := range events {
-		notification.HandleEvent(event)
+		line.HandleEvent(event)
 	}
 }
 
