@@ -21,12 +21,12 @@ func HandleEvent(event *linebot.Event) {
 			log.Println("Failed to save user ID to Firestore:", err)
 		}
 
-		// Send a weather update to the user based on their location.
-		// NotifyWeatherToUser(event.Source.UserID, city)
-
 	case linebot.EventTypeMessage:
 		if message, ok := event.Message.(*linebot.TextMessage); ok {
 			log.Printf("Received message from user %s: %s", event.Source.UserID, message.Text)
+
+			// Notify the user with weather data for the city
+			NotifyWeatherToUser(event.Source.UserID, message.Text)
 		}
 	}
 }
@@ -37,7 +37,11 @@ func HandleEvent(event *linebot.Event) {
 func NotifyWeatherToUser(userId, city string) {
 	processor, err := weather.GetWeatherProcessorForCity(city)
 	if err != nil {
-		log.Println("Failed to get weather processor for city:", err)
+		// If the city is not supported, send an error message to the user
+		errorMessage := "申し訳ございませんが、その都市の天気情報はサポートされていません。他の都市名を入力してください。"
+		if _, err := config.Bot.PushMessage(userId, linebot.NewTextMessage(errorMessage)).Do(); err != nil {
+			log.Println("Failed to send error message:", err)
+		}
 		return
 	}
 
