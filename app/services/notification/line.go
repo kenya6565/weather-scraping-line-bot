@@ -10,58 +10,64 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
-// HandleEvent handles incoming Line bot events. It performs actions based on the event type.
-// Currently, it supports 'follow' events where a user starts following the bot.
+// HandleEvent handles incoming Line bot events based on event type.
+// Supported events are 'follow' and 'text message'.
 func HandleEvent(event *linebot.Event) {
 	switch event.Type {
 	case linebot.EventTypeFollow:
-		// Store the user's ID to Firestore when the user follows the bot.
-		err := db.StoreUserID(event.Source.UserID)
-		if err != nil {
-			log.Println("Failed to save user ID to Firestore:", err)
-		}
+		handleFollowEvent(event)
 
 	case linebot.EventTypeMessage:
-		if message, ok := event.Message.(*linebot.TextMessage); ok {
-			log.Printf("Received message from user %s: %s", event.Source.UserID, message.Text)
-
-			// Notify the user with weather data for the city
-			NotifyWeatherToUser(event.Source.UserID, message.Text)
-		}
+		handleMessageEvent(event)
 	}
 }
 
-// NotifyWeatherToUser sends a weather report to a specified user.
-// It fetches the latest weather report, processes it to generate a user-friendly message,
-// and then sends this message to the provided user ID.
-func NotifyWeatherToUser(userId, city string) {
+// handleFollowEvent stores the user's ID to Firestore when the user starts following the bot.
+func handleFollowEvent(event *linebot.Event) {
+	err := db.StoreUserID(event.Source.UserID)
+	if err != nil {
+		log.Printf("Failed to save user ID %s to Firestore: %v", event.Source.UserID, err)
+	}
+}
+
+// handleMessageEvent processes the message event.
+// When a user sends a city name, it triggers the weather notification.
+func handleMessageEvent(event *linebot.Event) {
+	if message, ok := event.Message.(*linebot.TextMessage); ok {
+		log.Printf("Received message from user %s: %s", event.Source.UserID, message.Text)
+		NotifyWeatherToUser(event.Source.UserID, message.Text)
+	}
+}
+
+// NotifyWeatherToUser sends a weather report or an error message to the user.
+func NotifyWeatherToUser(userID, city string) {
 	processor, err := weather.GetWeatherProcessorForCity(city)
 	if err != nil {
-		// If the city is not supported, send an error message to the user
-		errorMessage := "申し訳ございませんが、その都市の天気情報はサポートされていません。他の都市名を入力してください。"
-		if _, err := config.Bot.PushMessage(userId, linebot.NewTextMessage(errorMessage)).Do(); err != nil {
-			log.Println("Failed to send error message:", err)
-		}
+		sendMessageToUser(userID, "申し訳ございませんが、その都市の天気情報はサポートされていません。他の都市名を入力してください。")
 		return
 	}
 
 	weatherReport, err := processor.FetchDataFromJMA()
 	if err != nil {
-		log.Println("Failed to fetch weather report:", err)
+		log.Printf("Failed to fetch weather report for city %s: %v", city, err)
 		return
 	}
-	log.Println("weatherReport:", weatherReport)
 
 	areas, timeSeriesInfos := processor.FilterAreas(weatherReport)
 	messages := processor.ProcessAreaInfos(areas, timeSeriesInfos)
 
 	if len(messages) == 0 {
-		log.Println("All precipitation probabilities are less than 50%. No notification sent.")
-		return
+		log.Print("All precipitation probabilities for city are less than 50%")
 	}
 
-	combinedMessage := strings.Join(messages, "\n")
-	if _, err := config.Bot.PushMessage(userId, linebot.NewTextMessage(combinedMessage)).Do(); err != nil {
-		log.Println("Failed to send weather notification:", err)
+	// Construct a user-friendly message and send it
+	combinedMessage := city + "で雨予報通知を登録しました\n" + strings.Join(messages, "\n")
+	sendMessageToUser(userID, combinedMessage)
+}
+
+// sendMessageToUser sends a text message to the specified user.
+func sendMessageToUser(userID, message string) {
+	if _, err := config.Bot.PushMessage(userID, linebot.NewTextMessage(message)).Do(); err != nil {
+		log.Printf("Failed to send message to user %s: %v", userID, err)
 	}
 }
