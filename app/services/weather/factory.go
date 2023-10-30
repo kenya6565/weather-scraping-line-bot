@@ -11,7 +11,7 @@ type CityWeatherConfig struct {
 
 func GetWeatherProcessorForCity(city string) (WeatherProcessor, error) {
 	switch city {
-	case "yokohama":
+	case "横浜":
 		return &CityWeatherConfig{
 			JmaApiEndpoint: "https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json",
 			AreaCode:       "140020",
