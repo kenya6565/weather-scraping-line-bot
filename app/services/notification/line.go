@@ -14,9 +14,11 @@ import (
 // Supported events are 'follow' and 'text message'.
 func HandleEvent(event *linebot.Event) {
 	switch event.Type {
+	// when user following me
 	case linebot.EventTypeFollow:
 		handleFollowEvent(event)
 
+	// when user sending messages to me
 	case linebot.EventTypeMessage:
 		handleMessageEvent(event)
 	}
