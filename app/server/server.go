@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	line "github.com/kenya6565/weather-scraping-line-bot/app/services/notification"
-	config "github.com/kenya6565/weather-scraping-line-bot/app/utils" // 追加
+	config "github.com/kenya6565/weather-scraping-line-bot/app/utils"
 )
 
 func handleCallback(w http.ResponseWriter, r *http.Request) {
