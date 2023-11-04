@@ -8,6 +8,7 @@ import (
 	model "github.com/kenya6565/weather-scraping-line-bot/app/model"
 )
 
+// generate messages to user
 func GeneratePrecipProbMessage(area model.AreaInfo, timeSeries model.TimeSeriesInfo) []string {
 	var messages []string
 
