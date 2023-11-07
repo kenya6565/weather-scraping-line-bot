@@ -3,17 +3,28 @@ package db
 import (
 	"context"
 	"log"
+	"os"
 
 	"cloud.google.com/go/firestore"
+	"github.com/joho/godotenv"
 )
-
-// FirebaseProjectID holds the project ID for the Firestore database.
-const FirebaseProjectID = "weather-notification-line-dev"
 
 // StoreUserID saves a given user ID to the Firestore.
 // This function initializes a Firestore client, and stores the user ID
 // into a "users" collection. If the operation is successful, it returns nil.
 func StoreUserID(userID string) error {
+	// Load environment variables from .env file.
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	// Get FirebaseProjectID from the environment variables.
+	FirebaseProjectID := os.Getenv("FIREBASE_PROJECT_ID")
+	if FirebaseProjectID == "" {
+		log.Fatal("FIREBASE_PROJECT_ID must be set in the environment")
+	}
+
 	// Create a new context for Firestore operations.
 	ctx := context.Background()
 
