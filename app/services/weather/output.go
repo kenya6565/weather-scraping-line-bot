@@ -22,6 +22,7 @@ func GeneratePrecipProbMessage(area model.AreaInfo, timeSeries model.TimeSeriesI
 			fmt.Printf("Error converting pop to integer: %v\n", err)
 			continue
 		}
+		// TODO: 通知したい降水確率に変える
 		if pop >= 20 {
 			timeDefine := timeSeries.TimeDefines[i+1]
 			startTime, endTime, err := getTimeRange(timeDefine)
