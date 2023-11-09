@@ -45,7 +45,7 @@ func handleMessageEvent(event *linebot.Event) {
 func NotifyWeatherToUser(userID, city string) {
 	processor, err := weather.GetWeatherProcessorForCity(city)
 	if err != nil {
-		sendMessageToUser(userID, "申し訳ございませんが、その都市の天気情報はサポートされていません。他の都市名を入力してください。")
+		sendMessageToUser(userID, "その都市の天気情報はサポートされていません。他の都市名を入力してください。")
 		return
 	}
 
@@ -58,6 +58,7 @@ func NotifyWeatherToUser(userID, city string) {
 	areas, timeSeriesInfos := processor.FilterAreas(weatherReport)
 	messages := processor.ProcessAreaInfos(areas, timeSeriesInfos)
 
+	// send log to server to recognize if process is successfully completed
 	if len(messages) == 0 {
 		log.Print("All precipitation probabilities for city are less than 50%")
 	}
