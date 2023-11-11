@@ -39,28 +39,29 @@ import (
 // 	]
 // }
 
+// FilterAreas filters the provided WeatherInfo for areas matching the CityWeatherConfig's AreaCode.
 func (y *CityWeatherConfig) FilterAreas(weatherReport []model.WeatherInfo) ([]model.AreaInfo, []model.TimeSeriesInfo) {
-	var areas []model.AreaInfo
-	var timeSeriesInfos []model.TimeSeriesInfo
+	var matchedAreas []model.AreaInfo
+	var matchedTimeSeriesInfos []model.TimeSeriesInfo
 
-	for _, info := range weatherReport {
-		for _, timeSeries := range info.TimeSeries {
-			for _, area := range timeSeries.Areas {
-				if area.Area.Code == y.AreaCode && area.Pops != nil {
-					areas = append(areas, area)
-					timeSeriesInfos = append(timeSeriesInfos, timeSeries)
+	for _, report := range weatherReport {
+		for _, series := range report.TimeSeries {
+			for _, area := range series.Areas {
+				if area.Area.Code == y.AreaCode && area.Pops != nil && len(*area.Pops) > 0 {
+					matchedAreas = append(matchedAreas, area)
+					matchedTimeSeriesInfos = append(matchedTimeSeriesInfos, series)
 				}
 			}
 		}
 	}
-
-	return areas, timeSeriesInfos
+	return matchedAreas, matchedTimeSeriesInfos
 }
 
+// ProcessAreaInfos processes the area and timeseries information and returns precipitation probability messages.
 func (y *CityWeatherConfig) ProcessAreaInfos(areas []model.AreaInfo, timeSeriesInfos []model.TimeSeriesInfo) []string {
 	var messages []string
 	for i, area := range areas {
-		messages = append(messages, GeneratePrecipProbMessage(area, timeSeriesInfos[i])...)
+		messages = append(messages, generateRainMessages(area, timeSeriesInfos[i])...)
 	}
 	return messages
 }
