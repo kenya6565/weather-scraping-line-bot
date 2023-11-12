@@ -8,5 +8,4 @@ import (
 type WeatherProcessor interface {
 	FetchDataFromJMA() ([]model.WeatherInfo, error)
 	FilterAreas([]model.WeatherInfo) ([]model.AreaInfo, []model.TimeSeriesInfo)
-	ProcessAreaInfos([]model.AreaInfo, []model.TimeSeriesInfo) []string
 }

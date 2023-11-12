@@ -56,12 +56,3 @@ func (y *CityWeatherConfig) FilterAreas(weatherReport []model.WeatherInfo) ([]mo
 	}
 	return matchedAreas, matchedTimeSeriesInfos
 }
-
-// ProcessAreaInfos processes the area and timeseries information and returns precipitation probability messages.
-func (y *CityWeatherConfig) ProcessAreaInfos(areas []model.AreaInfo, timeSeriesInfos []model.TimeSeriesInfo) []string {
-	var messages []string
-	for i, area := range areas {
-		messages = append(messages, generateRainMessages(area, timeSeriesInfos[i])...)
-	}
-	return messages
-}
