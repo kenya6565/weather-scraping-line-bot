@@ -1,6 +1,7 @@
 package line
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -45,19 +46,23 @@ func handleMessageEvent(event *linebot.Event) {
 func NotifyWeatherToUser(userID, city string) {
 	processor, err := weather.GetWeatherProcessorForCity(city)
 	if err != nil {
-		sendMessageToUser(userID, "その都市の天気情報はサポートされていません。他の都市名を入力してください。")
+		sendMessageToUser(userID, "申し訳ございませんが、その都市の天気情報はサポートされていません。他の都市名を入力してください。")
 		return
 	}
 
+	// APIを叩いて対象都市のデータを取得
 	weatherReport, err := processor.FetchDataFromJMA()
 	if err != nil {
 		log.Printf("Failed to fetch weather report for city %s: %v", city, err)
 		return
 	}
 
+	// 
 	areas, timeSeriesInfos := processor.FilterAreas(weatherReport)
-	messages := processor.ProcessAreaInfos(areas, timeSeriesInfos)
-
+	fmt.Printf("areas:::: %s", areas)
+	fmt.Printf("timeSeriesInfos:::: %s", timeSeriesInfos)
+	messages := weather.GenerateRainMessages(areas, timeSeriesInfos)
+	
 	// send log to server to recognize if process is successfully completed
 	if len(messages) == 0 {
 		log.Print("All precipitation probabilities for city are less than 50%")
