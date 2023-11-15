@@ -8,31 +8,30 @@ import (
 	model "github.com/kenya6565/weather-scraping-line-bot/app/model"
 )
 
-// generate messages to user
-func GeneratePrecipProbMessage(area model.AreaInfo, timeSeries model.TimeSeriesInfo) []string {
+// GenerateRainMessages generates messages based on precipitation probabilities.
+func GenerateRainMessages(areas []model.AreaInfo, timeSeriesInfos []model.TimeSeriesInfo) []string {
 	var messages []string
-
-	if len(*area.Pops) < 2 || len(timeSeries.TimeDefines) < 2 {
-		return messages
-	}
-
-	for i, popStr := range (*area.Pops)[1:] {
-		pop, err := strconv.Atoi(popStr)
-		if err != nil {
-			fmt.Printf("Error converting pop to integer: %v\n", err)
+	for i, area := range areas {
+		if len(*area.Pops) < 2 || len(timeSeriesInfos[i].TimeDefines) < 2 {
 			continue
 		}
-		// TODO: 通知したい降水確率に変える
-		if pop >= 20 {
-			timeDefine := timeSeries.TimeDefines[i+1]
-			startTime, endTime, err := getTimeRange(timeDefine)
+
+		for j, popStr := range (*area.Pops)[1:] {
+			pop, err := strconv.Atoi(popStr)
 			if err != nil {
-				fmt.Printf("Error getting time range: %v\n", err)
+				fmt.Printf("Error converting pop to integer: %v\n", err)
 				continue
 			}
-
-			message := fmt.Sprintf("時間: %s ~ %s, 降水確率: %d%%", startTime, endTime, pop)
-			messages = append(messages, message)
+			if pop >= 20 {
+				timeDefine := timeSeriesInfos[i].TimeDefines[j+1]
+				startTime, endTime, err := getTimeRange(timeDefine)
+				if err != nil {
+					fmt.Printf("Error getting time range: %v\n", err)
+					continue
+				}
+				message := fmt.Sprintf("時間: %s ~ %s, 降水確率: %d%%", startTime, endTime, pop)
+				messages = append(messages, message)
+			}
 		}
 	}
 	return messages
