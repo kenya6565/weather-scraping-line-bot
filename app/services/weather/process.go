@@ -56,3 +56,9 @@ func (y *CityWeatherConfig) FilterAreas(weatherReport []model.WeatherInfo) ([]mo
 	}
 	return matchedAreas, matchedTimeSeriesInfos
 }
+// APIから取得したデータをAreaInfoとTimeSeriesInfoのデータに分ける
+	// TODO: 普通にfactory.goで作った構造体のフィールドと比較すればいいだけじゃね？
+	// APIから取得したローデータから必要な情報のみだけを抽出するメソッドにしたい
+	// popsだけ抽出する
+	// areaNameとareaCodeに一致している。かつareasオブジェクトの中にpopsというオブジェクトがある
+	// output.goはそのデータをただ利用するだけ
