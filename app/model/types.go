@@ -12,7 +12,5 @@ type AreaInfo struct {
 		Name string `json:"name"`
 		Code string `json:"code"`
 	} `json:"area"`
-	// can be nil
-	// TODO: API見たら0も入ってくるのでnilにならないかもなので検証
-	Pops *[]string `json:"pops"`
+	Pops []string `json:"pops"` // nilを許容しないため、ポインタではなくスライスとして定義
 }
