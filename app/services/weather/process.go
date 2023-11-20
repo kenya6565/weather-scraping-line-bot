@@ -5,6 +5,7 @@ import (
 )
 
 //  ### HERE IS JSON RESPONSE FROM API
+// popsは0%でも必ず値が入ってくる
 // {
 // 	"timeSeries": [
 // 		# 1
@@ -39,26 +40,44 @@ import (
 // 	]
 // }
 
-// FilterAreas filters the provided WeatherInfo for areas matching the CityWeatherConfig's AreaCode.
-func (y *CityWeatherConfig) FilterAreas(weatherReport []model.WeatherInfo) ([]model.AreaInfo, []model.TimeSeriesInfo) {
-	var matchedAreas []model.AreaInfo
-	var matchedTimeSeriesInfos []model.TimeSeriesInfo
+// process row data of API and return TimeSeriesInfo data
+func (y *CityWeatherConfig) TransformWeatherReport(weatherReport []model.WeatherInfo) []model.TimeSeriesInfo {
+	var matchedTimeSeries []model.TimeSeriesInfo
 
 	for _, report := range weatherReport {
 		for _, series := range report.TimeSeries {
+			// 5つの要素を持つTimeDefinesのみ取得する
+			if len(series.TimeDefines) != 5 {
+				continue
+			}
+
+			var matchedAreas []model.AreaInfo
 			for _, area := range series.Areas {
-				if area.Area.Code == y.AreaCode && area.Pops != nil && len(*area.Pops) > 0 {
+				// areaCodeとareaNameが構造体と一致しているものを取得
+				if area.Area.Code == y.AreaCode && area.Area.Name == y.AreaName {
 					matchedAreas = append(matchedAreas, area)
-					matchedTimeSeriesInfos = append(matchedTimeSeriesInfos, series)
 				}
+			}
+
+			if len(matchedAreas) > 0 {
+				matchedSeries := model.TimeSeriesInfo{
+					Areas:       matchedAreas,
+					TimeDefines: series.TimeDefines[1:], // 先頭のTimeDefinesは不必要なので除去
+				}
+				// 先頭のpopsは不必要なので除去
+				for i := range matchedSeries.Areas {
+					matchedSeries.Areas[i].Pops = matchedSeries.Areas[i].Pops[1:]
+				}
+
+				matchedTimeSeries = append(matchedTimeSeries, matchedSeries)
 			}
 		}
 	}
-	return matchedAreas, matchedTimeSeriesInfos
+	return matchedTimeSeries
 }
+
 // APIから取得したデータをAreaInfoとTimeSeriesInfoのデータに分ける
-	// TODO: 普通にfactory.goで作った構造体のフィールドと比較すればいいだけじゃね？
-	// APIから取得したローデータから必要な情報のみだけを抽出するメソッドにしたい
-	// popsだけ抽出する
-	// areaNameとareaCodeに一致している。かつareasオブジェクトの中にpopsというオブジェクトがある
-	// output.goはそのデータをただ利用するだけ
+// TODO: 普通にfactory.goで作った構造体のフィールドと比較すればいいだけじゃね？
+// APIから取得したローデータから必要な情報のみだけを抽出するメソッドにしたい
+// areaNameとareaCodeに一致している。かつareasオブジェクトの中にpopsというオブジェクトがある
+// popsフィールドがなければcontinue
