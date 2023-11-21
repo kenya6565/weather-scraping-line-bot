@@ -41,7 +41,7 @@ import (
 // }
 
 // process row data of API and return TimeSeriesInfo data
-func (y *CityWeatherConfig) TransformWeatherReport(weatherReport []model.WeatherInfo) []model.TimeSeriesInfo {
+func (y *CityWeatherConfig) TransformWeatherData(weatherReport []model.WeatherInfo) []model.TimeSeriesInfo {
 	var matchedTimeSeries []model.TimeSeriesInfo
 
 	for _, report := range weatherReport {
