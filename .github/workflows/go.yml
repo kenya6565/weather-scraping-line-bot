@@ -8,28 +8,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: '1.19' # またはプロジェクトに適したGoのバージョンを使用
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.19' # またはプロジェクトに適したGoのバージョンを使用
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
 
-   - name: Get dependencies
-      run: go get -v -t -d ./...
-      working-directory: ./app
+      - name: Get dependencies
+        run: go get -v -t -d ./...
+        working-directory: ./app
 
-    - name: Test
-      run: go test -v ./... -coverprofile=coverage.out
-      working-directory: ./app
+      - name: Test
+        run: go test -v ./... -coverprofile=coverage.out
+        working-directory: ./app
 
-    - name: Generate coverage report
-      run: go tool cover -func=coverage.out
-      working-directory: ./app
+      - name: Generate coverage report
+        run: go tool cover -func=coverage.out
+        working-directory: ./app
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.out
-        fail_ci_if_error: true
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./app/coverage.out
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
