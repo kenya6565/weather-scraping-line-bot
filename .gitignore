@@ -1,6 +1,10 @@
 /app/cmd/.env
 /app/bin/
 
+# test coverage report
+/app/cover.html
+/app/cover.out
+
 /terraform/.terraform/
 /terraform/terraform.tfstate
 /terraform/tfplan
