@@ -75,9 +75,3 @@ func (y *CityWeatherConfig) TransformWeatherData(weatherReport []model.WeatherIn
 	}
 	return matchedTimeSeries
 }
-
-// APIから取得したデータをAreaInfoとTimeSeriesInfoのデータに分ける
-// TODO: 普通にfactory.goで作った構造体のフィールドと比較すればいいだけじゃね？
-// APIから取得したローデータから必要な情報のみだけを抽出するメソッドにしたい
-// areaNameとareaCodeに一致している。かつareasオブジェクトの中にpopsというオブジェクトがある
-// popsフィールドがなければcontinue
