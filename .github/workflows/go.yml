@@ -21,7 +21,7 @@ jobs:
 
       - name: Test
         run: go test -v ./... -coverprofile=coverage.out
-        working-directory: ./app
+        working-directory: ./app/services/weather/
 
       - name: Generate coverage report
         run: go tool cover -func=coverage.out
