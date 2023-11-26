@@ -1,7 +1,6 @@
 package line
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -50,26 +49,20 @@ func NotifyWeatherToUser(userID, city string) {
 		return
 	}
 
-	// APIを叩いて対象都市のデータを取得
 	weatherReport, err := processor.FetchDataFromJMA()
 	if err != nil {
 		log.Printf("Failed to fetch weather report for city %s: %v", city, err)
 		return
 	}
+	timeSeriesInfos := processor.TransformWeatherData(weatherReport)
+	messages := weather.GenerateRainMessages(timeSeriesInfos)
 
-	// 
-	areas, timeSeriesInfos := processor.FilterAreas(weatherReport)
-	fmt.Printf("areas:::: %s", areas)
-	fmt.Printf("timeSeriesInfos:::: %s", timeSeriesInfos)
-	messages := weather.GenerateRainMessages(areas, timeSeriesInfos)
-	
-	// send log to server to recognize if process is successfully completed
+	// when no precipitation
 	if len(messages) == 0 {
 		log.Print("All precipitation probabilities for city are less than 50%")
 	}
 
-	// Construct a user-friendly message and send it
-	combinedMessage := city + "で雨予報通知を登録しました\n" + strings.Join(messages, "\n")
+	combinedMessage := city + "の天気予報：\n" + strings.Join(messages, "\n")
 	sendMessageToUser(userID, combinedMessage)
 }
 
