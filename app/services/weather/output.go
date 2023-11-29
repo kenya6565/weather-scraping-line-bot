@@ -15,6 +15,7 @@ func GenerateRainMessages(timeSeriesInfos []model.TimeSeriesInfo) []string {
 	for _, series := range timeSeriesInfos {
 		for i, popStr := range series.Areas[0].Pops {
 			pop, err := strconv.Atoi(popStr)
+			// 降水確率が特定の数値を下回るのであればskip(通知しない)
 			// if err != nil || pop <= 0 {
 			// 	continue // Skip if conversion fails or pop is below 20
 			// }
@@ -38,8 +39,12 @@ func getTimeRange(timeDefine string) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
+	// JSTのタイムゾーンを設定する
+	// Setting the timezone to JST
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+	// 開始時間を"2006-01-02 15:04"の形式でフォーマットする
 	startTime := parsedTime.In(jst).Format("2006-01-02 15:04")
+	// 終了時間を"15:04"の形式でフォーマットする
 	endTime := parsedTime.In(jst).Add(5*time.Hour + 59*time.Minute).Format("15:04")
 	return startTime, endTime, nil
 }
