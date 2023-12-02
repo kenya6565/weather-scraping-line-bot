@@ -48,4 +48,19 @@ func TestFetchDataFromJMA(t *testing.T) {
 	c.JmaApiEndpoint = ts.URL
 	_, err = c.FetchDataFromJMA()
 	assert.Error(t, err)
+
+	// エラーケース4: レスポンスボディの読み取りエラー
+	ts = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 1e6（100万）個の "a" を連結した大きな文字列をレスポンスとして返す
+		// これでレスポンスボディの読み取り時にエラーを発生させてerrorを返しているかの挙動を確認する
+		var bigData string
+		for i := 0; i < 1e6; i++ {
+			bigData += "a"
+		}
+		fmt.Fprintln(w, bigData)
+	}))
+	defer ts.Close()
+	c.JmaApiEndpoint = ts.URL
+	_, err = c.FetchDataFromJMA()
+	assert.Error(t, err)
 }
