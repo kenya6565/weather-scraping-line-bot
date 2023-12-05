@@ -20,9 +20,9 @@ func StoreUserID(userID string) error {
 	}
 
 	// Get FirebaseProjectID from the environment variables.
-	FirebaseProjectID := os.Getenv("FIREBASE_PROJECT_ID")
+	FirebaseProjectID := os.Getenv("TF_VAR_FIREBASE_PROJECT_ID")
 	if FirebaseProjectID == "" {
-		log.Fatal("FIREBASE_PROJECT_ID must be set in the environment")
+		log.Fatal("TF_VAR_FIREBASE_PROJECT_ID must be set in the environment")
 	}
 
 	// Create a new context for Firestore operations.
