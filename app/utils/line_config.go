@@ -24,8 +24,8 @@ func InitLineBot() {
 
 	// Initialize the LINE Bot client using credentials from environment variables.
 	Bot, err = linebot.New(
-		os.Getenv("TF_VAR_LINE_CHANNEL_SECRET"),
-		os.Getenv("TF_VAR_LINE_ACCESS_TOKEN"),
+		os.Getenv("LINE_CHANNEL_SECRET"),
+		os.Getenv("LINE_ACCESS_TOKEN"),
 	)
 	if err != nil {
 		log.Fatalf("Failed to create LINE Bot client: %v", err)
