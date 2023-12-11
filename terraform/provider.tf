@@ -1,5 +1,3 @@
-provider "google" {
-  credentials = file(var.service_account_key_path)
-  project     = var.gcp_project_id
-  region      = "us-central1"
+provider "aws" {
+  region = "ap-northeast-1" # 東京リージョン
 }
