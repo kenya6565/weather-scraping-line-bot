@@ -22,6 +22,10 @@ resource "aws_lambda_function" "weather_lambda" {
   role = aws_iam_role.lambda_role.arn
 
   depends_on = [null_resource.build_lambda]
+
+  tracing_config {
+    mode = "PassThrough"
+  }
 }
 
 resource "aws_iam_role" "lambda_role" {
