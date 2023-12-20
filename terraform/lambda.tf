@@ -23,6 +23,7 @@ resource "aws_lambda_function" "weather_lambda" {
 
   depends_on = [null_resource.build_lambda]
 
+  # loggroupを作成する
   tracing_config {
     mode = "PassThrough"
   }
