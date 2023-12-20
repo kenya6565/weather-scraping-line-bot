@@ -29,6 +29,7 @@ func StoreUserID(userID string) error {
 	ctx := context.Background()
 
 	// Initialize a Firestore client.
+	// ここでGOOGLE_APPLICATION_CREDENTIALSを読み取っている
 	client, err := firestore.NewClient(ctx, FirebaseProjectID)
 	if err != nil {
 		return err
