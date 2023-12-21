@@ -15,3 +15,9 @@ resource "aws_ssm_parameter" "firebase_project_id" {
   type  = "SecureString"
   value = var.firebase_project_id
 }
+
+resource "aws_ssm_parameter" "google_application_credentials" {
+  name  = "/app/google_application_credentials"
+  type  = "SecureString"
+  value = var.google_application_credentials
+}
