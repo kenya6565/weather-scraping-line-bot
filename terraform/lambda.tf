@@ -22,6 +22,11 @@ resource "aws_lambda_function" "weather_lambda" {
   role = aws_iam_role.lambda_role.arn
 
   depends_on = [null_resource.build_lambda]
+  environment {
+    variables = {
+      AWS_EXECUTION_ENV = "AWS_Lambda"
+    }
+  }
 
   # loggroupを作成する
   tracing_config {
