@@ -53,3 +53,26 @@ resource "aws_iam_role" "lambda_role" {
 }
 EOF
 }
+
+resource "aws_iam_policy" "ssm_get_parameter" {
+  name        = "SSMGetParameter"
+  description = "Allow lambda function to get parameters from SSM"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ssm:GetParameter",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_get_parameter_attach" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.ssm_get_parameter.arn
+}
