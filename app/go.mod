@@ -4,10 +4,12 @@ go 1.19
 
 require (
 	cloud.google.com/go/firestore v1.12.0
+	github.com/aws/aws-lambda-go v1.43.0
 	github.com/aws/aws-sdk-go v1.49.4
 	github.com/joho/godotenv v1.5.1
 	github.com/line/line-bot-sdk-go v7.8.0+incompatible
 	github.com/stretchr/testify v1.8.4
+	google.golang.org/api v0.126.0
 )
 
 require (
@@ -33,7 +35,6 @@ require (
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/api v0.126.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230530153820-e85fd2cbaebc // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc // indirect
