@@ -5,20 +5,17 @@ import (
 	"net/http"
 
 	line "github.com/kenya6565/weather-scraping-line-bot/app/services/notification"
-	config "github.com/kenya6565/weather-scraping-line-bot/app/utils"
 )
 
-func handleCallback(w http.ResponseWriter, r *http.Request) {
-	events, _ := config.Bot.ParseRequest(r)
-	for _, event := range events {
-		line.HandleEvent(event)
-	}
-}
-
-func StartServer() {
+func ActivateLocalServer() {
 	// execute handleCallback when receiving request /callback
-	http.HandleFunc("/callback", handleCallback)
+	http.HandleFunc("/callback", line.HandleCallback)
 	log.Println("Starting server on :8080...")
 	// activate http server
 	http.ListenAndServe(":8080", nil)
 }
+
+// TODO: Lambda環境で必要なネットワーク処理を記載
+// func ActivateLambda() {
+
+// }
