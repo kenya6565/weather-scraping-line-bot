@@ -49,17 +49,6 @@ func InitLineBot() {
 		}
 		lineAccessToken := *param.Parameter.Value
 
-		// FIREBASE_PROJECT_IDの読み込み
-		// secretName = "/app/firebase_project_id"
-		// param, err = svc.GetParameter(&ssm.GetParameterInput{
-		// 	Name:           aws.String(secretName),
-		// 	WithDecryption: aws.Bool(true),
-		// })
-		// if err != nil {
-		// 	log.Fatalf("Failed to fetch parameter %s: %v", secretName, err)
-		// }
-		// firebaseProjectId := *param.Parameter.Value
-
 		// 本番環境の場合、parameter storeから環境変数を読み込む
 		Bot, err = linebot.New(
 			lineChannelSecret,
