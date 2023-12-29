@@ -1,7 +1,4 @@
 /app/cmd/.env
-/app/cmd/bootstrap
-/app/cmd/bootstrap.zip
-/app/bin/
 
 # test coverage report
 /app/cover.html
