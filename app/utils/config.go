@@ -68,6 +68,7 @@ func initFirestoreClient() error {
 			log.Fatalf("Error loading .env file")
 		}
 		FirebaseProjectID = os.Getenv("FIREBASE_PROJECT_ID")
+		googleApplicationCredentials = os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
 	}
 
 	// Create a new context for Firestore operations.
