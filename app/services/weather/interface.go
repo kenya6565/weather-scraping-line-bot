@@ -8,4 +8,7 @@ import (
 type WeatherProcessor interface {
 	FetchDataFromJMA() ([]model.WeatherInfo, error)
 	TransformWeatherData([]model.WeatherInfo) []model.TimeSeriesInfo
+	GetJmaApiEndpoint() string
+	GetAreaCode() string
+	GetAreaName() string
 }

@@ -10,6 +10,18 @@ type CityWeatherConfig struct {
 	AreaName       string
 }
 
+func (c *CityWeatherConfig) GetJmaApiEndpoint() string {
+	return c.JmaApiEndpoint
+}
+
+func (c *CityWeatherConfig) GetAreaCode() string {
+	return c.AreaCode
+}
+
+func (c *CityWeatherConfig) GetAreaName() string {
+	return c.AreaName
+}
+
 func GetWeatherProcessorForCity(city string) (WeatherProcessor, error) {
 	switch city {
 	case "横浜":
