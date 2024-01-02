@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"cloud.google.com/go/firestore"
 	"github.com/kenya6565/weather-scraping-line-bot/app/db"
 	"github.com/kenya6565/weather-scraping-line-bot/app/services/weather"
 	config "github.com/kenya6565/weather-scraping-line-bot/app/utils"
@@ -35,7 +36,7 @@ func HandleEvent(event *linebot.Event) {
 // handleFollowEvent stores the user's ID to Firestore when the user starts following the bot.
 func handleFollowEvent(event *linebot.Event) {
 	ctx := config.CreateContext()
-	err := db.StoreUserID(ctx, event.Source.UserID)
+	_, err := db.StoreUserID(ctx, event.Source.UserID)
 	if err != nil {
 		log.Printf("Failed to save user ID %s to Firestore: %v", event.Source.UserID, err)
 	}
@@ -52,24 +53,22 @@ func handleMessageEvent(event *linebot.Event) {
 			sendMessageToUser(event.Source.UserID, "申し訳ございませんが、その都市の天気情報はサポートされていません。他の都市名を入力してください。")
 			return
 		}
-		// TODO: ここにDBに都市情報保存するメソッド追加
-		// config, ok := processor.(*weather.CityWeatherConfig)
-		// if !ok {
-		// 	log.Println("Failed to assert type")
-		// 	return
-		// }
-		// ctx := db.CreateContext()
-		// // TODO: ここの部分でうまくいっていないので修正する
-		// _, _, err = db.Client.Collection("users").Add(ctx, map[string]interface{}{
-		// 	"userId":         event.Source.UserID,
-		// 	"JmaApiEndpoint": config.JmaApiEndpoint,
-		// 	"AreaCode":       config.AreaCode,
-		// 	"AreaName":       config.AreaName,
-		// })
-		// if err != nil {
-		// 	log.Println("Failed adding user:", err)
-		// 	return
-		// }
+		ctx := config.CreateContext()
+		docRef, err := db.StoreUserID(ctx, event.Source.UserID)
+		if err != nil {
+			log.Println("Failed adding user:", err)
+			return
+		}
+
+		_, err = docRef.Set(ctx, map[string]interface{}{
+			"JmaApiEndpoint": processor.GetJmaApiEndpoint(),
+			"AreaCode":       processor.GetAreaCode(),
+			"AreaName":       processor.GetAreaName(),
+		}, firestore.MergeAll)
+		if err != nil {
+			log.Println("Failed adding user:", err)
+			return
+		}
 
 		NotifyWeatherToUser(event.Source.UserID, message.Text, processor)
 	}
@@ -77,6 +76,9 @@ func handleMessageEvent(event *linebot.Event) {
 
 // NotifyWeatherToUser sends a weather report or an error message to the user.
 func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor) {
+
+
+	
 	weatherReport, err := processor.FetchDataFromJMA()
 	if err != nil {
 		log.Printf("Failed to fetch weather report for city %s: %v", city, err)
