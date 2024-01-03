@@ -30,3 +30,20 @@ func StoreCityInfo(userID string, details map[string]interface{}) (*firestore.Do
 	}
 	return docRef, nil
 }
+
+func GetAllUsers() ([]map[string]interface{}, error) {
+	ctx := config.CreateContext()
+	iter := config.Client.Collection("users").Documents(ctx)
+	docs, err := iter.GetAll()
+	if err != nil {
+		log.Printf("Failed to get user documents: %v", err)
+		return nil, err
+	}
+
+	var users []map[string]interface{}
+	for _, doc := range docs {
+		users = append(users, doc.Data())
+	}
+
+	return users, nil
+}
