@@ -5,9 +5,14 @@ import (
 )
 
 type CityWeatherConfig struct {
+	CityName       string
 	JmaApiEndpoint string
 	AreaCode       string
 	AreaName       string
+}
+
+func (c *CityWeatherConfig) GetCityName() string {
+	return c.CityName
 }
 
 func (c *CityWeatherConfig) GetJmaApiEndpoint() string {
@@ -25,20 +30,22 @@ func (c *CityWeatherConfig) GetAreaName() string {
 func GetWeatherProcessorForCity(city string) (WeatherProcessor, error) {
 	switch city {
 	case "横浜":
-		// CityWeatherConfigはWeatherProcessorインターフェースを実装している
 		return &CityWeatherConfig{
+			CityName:       "横浜",
 			JmaApiEndpoint: "https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json",
 			AreaCode:       "140020",
 			AreaName:       "西部",
 		}, nil
 	case "東京":
 		return &CityWeatherConfig{
+			CityName:       "東京",
 			JmaApiEndpoint: "https://www.jma.go.jp/bosai/forecast/data/forecast/130000.json",
 			AreaCode:       "130010",
 			AreaName:       "東京地方",
 		}, nil
 	case "大阪":
 		return &CityWeatherConfig{
+			CityName:       "大阪",
 			JmaApiEndpoint: "https://www.jma.go.jp/bosai/forecast/data/forecast/270000.json",
 			AreaCode:       "270000",
 			AreaName:       "大阪府",
