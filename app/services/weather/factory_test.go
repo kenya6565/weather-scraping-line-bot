@@ -13,9 +13,9 @@ func TestGetWeatherProcessorForCity(t *testing.T) {
 		expectedError  bool
 		expectedConfig *CityWeatherConfig
 	}{
-		{"横浜", false, &CityWeatherConfig{"https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json", "140020", "西部"}},
-		{"東京", false, &CityWeatherConfig{"https://www.jma.go.jp/bosai/forecast/data/forecast/130000.json", "130010", "東京地方"}},
-		{"大阪", false, &CityWeatherConfig{"https://www.jma.go.jp/bosai/forecast/data/forecast/270000.json", "270000", "大阪府"}},
+		{"横浜", false, &CityWeatherConfig{"横浜", "https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json", "140020", "西部"}},
+		{"東京", false, &CityWeatherConfig{"東京", "https://www.jma.go.jp/bosai/forecast/data/forecast/130000.json", "130010", "東京地方"}},
+		{"大阪", false, &CityWeatherConfig{"大阪", "https://www.jma.go.jp/bosai/forecast/data/forecast/270000.json", "270000", "大阪府"}},
 		{"未知の都市", true, nil},
 	}
 
