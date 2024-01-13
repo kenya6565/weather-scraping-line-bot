@@ -6,10 +6,10 @@ import (
 	"io"
 	"net/http"
 
-	model "github.com/kenya6565/weather-scraping-line-bot/app/model"
+	domain "github.com/kenya6565/weather-scraping-line-bot/app/domain/weather"
 )
 
-func (c *CityWeatherConfig) FetchDataFromJMA() ([]model.WeatherInfo, error) {
+func (c *CityWeatherConfig) FetchDataFromJMA() ([]domain.WeatherInfo, error) {
 	resp, err := http.Get(c.JmaApiEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("error making GET request: %w", err)
@@ -22,7 +22,7 @@ func (c *CityWeatherConfig) FetchDataFromJMA() ([]model.WeatherInfo, error) {
 	}
 
 	// get API data as slice
-	var weatherReport []model.WeatherInfo
+	var weatherReport []domain.WeatherInfo
 	err = json.Unmarshal(body, &weatherReport)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling json: %w", err)
