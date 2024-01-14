@@ -1,7 +1,7 @@
 package weather
 
 import (
-	model "github.com/kenya6565/weather-scraping-line-bot/app/model"
+	domain "github.com/kenya6565/weather-scraping-line-bot/app/domain/weather"
 )
 
 //  ### HERE IS JSON RESPONSE FROM API
@@ -41,8 +41,8 @@ import (
 // }
 
 // process row data of API and return TimeSeriesInfo data
-func (y *CityWeatherConfig) TransformWeatherData(weatherReport []model.WeatherInfo) []model.TimeSeriesInfo {
-	var matchedTimeSeries []model.TimeSeriesInfo
+func (y *CityWeatherConfig) TransformWeatherData(weatherReport []domain.WeatherInfo) []domain.TimeSeriesInfo {
+	var matchedTimeSeries []domain.TimeSeriesInfo
 
 	for _, report := range weatherReport {
 		for _, series := range report.TimeSeries {
@@ -51,7 +51,7 @@ func (y *CityWeatherConfig) TransformWeatherData(weatherReport []model.WeatherIn
 				continue
 			}
 
-			var matchedAreas []model.AreaInfo
+			var matchedAreas []domain.AreaInfo
 			for _, area := range series.Areas {
 				// areaCodeとareaNameが構造体と一致しているものを取得
 				if area.Area.Code == y.AreaCode && area.Area.Name == y.AreaName {
@@ -60,7 +60,7 @@ func (y *CityWeatherConfig) TransformWeatherData(weatherReport []model.WeatherIn
 			}
 
 			if len(matchedAreas) > 0 {
-				matchedSeries := model.TimeSeriesInfo{
+				matchedSeries := domain.TimeSeriesInfo{
 					Areas:       matchedAreas,
 					TimeDefines: series.TimeDefines[1:], // 先頭のTimeDefinesは不必要なので除去
 				}
