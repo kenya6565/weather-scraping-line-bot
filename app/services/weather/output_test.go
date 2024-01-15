@@ -3,15 +3,15 @@ package weather
 import (
 	"testing"
 
-	model "github.com/kenya6565/weather-scraping-line-bot/app/model"
+	domain "github.com/kenya6565/weather-scraping-line-bot/app/domain/weather"
 	"github.com/stretchr/testify/assert"
 )
 
 // create sample TimeSeriesInfo data
-func createSampleTimeSeriesInfo() []model.TimeSeriesInfo {
-	return []model.TimeSeriesInfo{
+func createSampleTimeSeriesInfo() []domain.TimeSeriesInfo {
+	return []domain.TimeSeriesInfo{
 		{
-			Areas: []model.AreaInfo{
+			Areas: []domain.AreaInfo{
 				{
 					Pops: []string{"10", "30", "50", "70", "90"},
 				},
