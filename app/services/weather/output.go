@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"time"
 
-	model "github.com/kenya6565/weather-scraping-line-bot/app/model"
+	domain "github.com/kenya6565/weather-scraping-line-bot/app/domain/weather"
 )
 
 // GenerateRainMessages generates messages based on precipitation probabilities.
-func GenerateRainMessages(timeSeriesInfos []model.TimeSeriesInfo) []string {
+func GenerateRainMessages(timeSeriesInfos []domain.TimeSeriesInfo) []string {
 	var messages []string
 
 	for _, series := range timeSeriesInfos {
