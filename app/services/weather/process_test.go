@@ -3,16 +3,16 @@ package weather
 import (
 	"testing"
 
-	"github.com/kenya6565/weather-scraping-line-bot/app/model"
+	"github.com/kenya6565/weather-scraping-line-bot/app/domain/weather"
 	"github.com/stretchr/testify/assert"
 )
 
-func createSampleWeatherInfo() []model.WeatherInfo {
-	return []model.WeatherInfo{
+func createSampleWeatherInfo() []domain.WeatherInfo {
+	return []domain.WeatherInfo{
 		{
-			TimeSeries: []model.TimeSeriesInfo{
+			TimeSeries: []domain.TimeSeriesInfo{
 				{
-					Areas: []model.AreaInfo{
+					Areas: []domain.AreaInfo{
 						{
 							Area: struct {
 								Name string `json:"name"`
