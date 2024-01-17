@@ -4,8 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kenya6565/weather-scraping-line-bot/app/presentation/notifications"
 	"github.com/kenya6565/weather-scraping-line-bot/app/infrastructure/notification"
+	"github.com/kenya6565/weather-scraping-line-bot/app/presentation/notifications"
+	n "github.com/kenya6565/weather-scraping-line-bot/app/services/notification"
 )
 
 func HandleCallback(w http.ResponseWriter, r *http.Request) {
@@ -24,6 +25,6 @@ func ActivateLocalServer() {
 }
 
 // TODO: Lambda環境で必要なネットワーク処理を記載
-// func ActivateLambda() {
-
-// }
+func ActivateLambda() {
+	n.NotifyWeatherToAllUsers()
+}
