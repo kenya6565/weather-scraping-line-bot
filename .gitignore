@@ -4,6 +4,9 @@
 /app/cover.html
 /app/cover.out
 
+/app/cmd/bootstrap
+/app/cmd/bootstrap.zip
+
 /terraform/.terraform/
 /terraform/terraform.tfstate
 /terraform/tfplan
