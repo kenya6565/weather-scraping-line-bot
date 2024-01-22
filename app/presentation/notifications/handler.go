@@ -9,11 +9,11 @@ import (
 // Supported events are 'follow' and 'text message'.
 func HandleEvent(event *linebot.Event) {
 	switch event.Type {
-	// when user following me
+	// when user following linebot
 	case linebot.EventTypeFollow:
 		notification.HandleFollowEvent(event)
 
-	// when user sending messages to me
+	// when user sending messages to linebot
 	case linebot.EventTypeMessage:
 		notification.HandleMessageEvent(event)
 	}
