@@ -18,8 +18,6 @@ func HandleFollowEvent(event *linebot.Event) {
 	if err != nil {
 		log.Printf("Failed to save user ID %s to Firestore: %v", event.Source.UserID, err)
 	}
-	NotifyWeatherToAllUsers()
-
 }
 
 // handleMessageEvent processes the message event.
@@ -46,7 +44,7 @@ func HandleMessageEvent(event *linebot.Event) {
 		}
 
 		NotifyWeatherToUser(event.Source.UserID, message.Text, processor)
-	}
+			}
 }
 
 // NotifyWeatherToUser sends a weather report or an error message to the user.
