@@ -77,3 +77,8 @@ resource "aws_iam_role_policy_attachment" "ssm_get_parameter_attach" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.ssm_get_parameter.arn
 }
+
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
