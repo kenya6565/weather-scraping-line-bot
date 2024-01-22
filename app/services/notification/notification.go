@@ -49,6 +49,7 @@ func HandleMessageEvent(event *linebot.Event) {
 
 // NotifyWeatherToUser sends a weather report or an error message to the user.
 func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor) {
+	log.Printf("NotifyWeatherToUser called for user %s and city %s", userID, city)
 	weatherReport, err := processor.FetchDataFromJMA()
 	if err != nil {
 		log.Printf("Failed to fetch weather report for city %s: %v", city, err)
