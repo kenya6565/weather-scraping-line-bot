@@ -42,9 +42,9 @@ func HandleMessageEvent(event *linebot.Event) {
 			log.Println("Failed adding city info:", err)
 			return
 		}
-
+		// NotifyWeatherToAllUsers()
 		NotifyWeatherToUser(event.Source.UserID, message.Text, processor)
-			}
+	}
 }
 
 // NotifyWeatherToUser sends a weather report or an error message to the user.
@@ -55,7 +55,12 @@ func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor
 		log.Printf("Failed to fetch weather report for city %s: %v", city, err)
 		return
 	}
-	timeSeriesInfos := processor.TransformWeatherData(weatherReport)
+
+	timeSeriesInfos, err := processor.TransformWeatherData(weatherReport)
+	if err != nil {
+		log.Printf("Failed to transform weather data for city %s: %v", city, err)
+		return
+	}
 	messages := weather.GenerateRainMessages(timeSeriesInfos)
 
 	// when no precipitation

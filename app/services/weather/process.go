@@ -1,6 +1,8 @@
 package weather
 
 import (
+	"fmt"
+
 	domain "github.com/kenya6565/weather-scraping-line-bot/app/domain/weather"
 )
 
@@ -41,7 +43,7 @@ import (
 // }
 
 // process row data of API and return TimeSeriesInfo data
-func (y *CityWeatherConfig) TransformWeatherData(weatherReport []domain.WeatherInfo) []domain.TimeSeriesInfo {
+func (y *CityWeatherConfig) TransformWeatherData(weatherReport []domain.WeatherInfo) ([]domain.TimeSeriesInfo, error) {
 	var matchedTimeSeries []domain.TimeSeriesInfo
 
 	for _, report := range weatherReport {
@@ -58,6 +60,9 @@ func (y *CityWeatherConfig) TransformWeatherData(weatherReport []domain.WeatherI
 					matchedAreas = append(matchedAreas, area)
 				}
 			}
+			if len(matchedAreas) == 0 {
+				return nil, fmt.Errorf("no matched areas found")
+			}
 
 			if len(matchedAreas) > 0 {
 				matchedSeries := domain.TimeSeriesInfo{
@@ -73,5 +78,5 @@ func (y *CityWeatherConfig) TransformWeatherData(weatherReport []domain.WeatherI
 			}
 		}
 	}
-	return matchedTimeSeries
+	return matchedTimeSeries, nil
 }
