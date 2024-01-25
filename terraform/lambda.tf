@@ -27,7 +27,7 @@ resource "aws_lambda_function" "weather_lambda" {
       AWS_EXECUTION_ENV = "AWS_Lambda"
     }
   }
-  timeout = 10
+  timeout = 30
 
   # loggroupを作成する
   tracing_config {
