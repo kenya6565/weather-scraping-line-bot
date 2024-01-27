@@ -4,9 +4,11 @@ import (
 	"log"
 	"os"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/kenya6565/weather-scraping-line-bot/app/infrastructure/db"
 	"github.com/kenya6565/weather-scraping-line-bot/app/infrastructure/notification"
 	"github.com/kenya6565/weather-scraping-line-bot/app/infrastructure/server"
+	n "github.com/kenya6565/weather-scraping-line-bot/app/services/notification"
 )
 
 func main() {
@@ -22,7 +24,7 @@ func main() {
 	// prd env
 	if os.Getenv("AWS_EXECUTION_ENV") == "AWS_Lambda" {
 		log.Println("Running on AWS Lambda")
-		server.ActivateLambda()
+		lambda.Start(n.NotifyWeatherToAllUsers)
 	} else {
 		server.ActivateLocalServer()
 	}
