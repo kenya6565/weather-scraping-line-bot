@@ -10,6 +10,12 @@ import (
 )
 
 func main() {
+	// output log when something goes wrong
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Recovered from panic: %v", r)
+		}
+	}()
 	db.InitFirestoreClient()
 	notification.InitLineBot()
 
