@@ -76,6 +76,8 @@ func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor
 func sendMessageToUser(userID, message string) {
 	if _, err := notification.Bot.PushMessage(userID, linebot.NewTextMessage(message)).Do(); err != nil {
 		log.Printf("Failed to send message to user %s: %v", userID, err)
+	} else {
+		log.Printf("Successfully sent message to user %s", userID)
 	}
 }
 
