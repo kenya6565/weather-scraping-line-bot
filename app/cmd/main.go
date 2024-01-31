@@ -18,6 +18,8 @@ import (
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// イベント実行(api gateway)
 	if request.Headers != nil {
+		log.Println("Received event: ", request.Body)
+
 		// Create a new http.Request
 		httpRequest, err := http.NewRequest("POST", "/", bytes.NewBufferString(request.Body))
 		if err != nil {
