@@ -13,21 +13,20 @@ import (
 	"github.com/kenya6565/weather-scraping-line-bot/app/infrastructure/server"
 	"github.com/kenya6565/weather-scraping-line-bot/app/presentation/notifications"
 	n "github.com/kenya6565/weather-scraping-line-bot/app/services/notification"
-	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// イベント実行(api gateway)
 	if request.Headers != nil {
 		// Create a new http.Request
-		httpRequest, err := http.NewRequest("POST", "/", bytes.NewBuffer([]byte(request.Body)))
+		httpRequest, err := http.NewRequest("POST", "/", bytes.NewBufferString(request.Body))
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 400}, err
 		}
 		httpRequest.Header.Set("X-Line-Signature", request.Headers["X-Line-Signature"])
 
 		// Parse the incoming event to a Line event
-		lineEvents, err := linebot.ParseRequest(request.Headers["X-Line-Signature"], httpRequest)
+		lineEvents, err := notification.Bot.ParseRequest(httpRequest)
 		if err != nil {
 			return events.APIGatewayProxyResponse{StatusCode: 400}, err
 		}
