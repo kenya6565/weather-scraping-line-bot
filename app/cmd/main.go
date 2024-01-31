@@ -17,27 +17,29 @@ import (
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// イベント実行(api gateway)
-	log.Println("Received event: ", request.Body)
+	if request.Headers != nil {
+		log.Println("Received event: ", request.Body)
 
-	// Create a new http.Request
-	httpRequest, err := http.NewRequest("POST", "/", bytes.NewBufferString(request.Body))
-	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 400}, err
+		// Create a new http.Request
+		httpRequest, err := http.NewRequest("POST", "/", bytes.NewBufferString(request.Body))
+		if err != nil {
+			return events.APIGatewayProxyResponse{StatusCode: 400}, err
+		}
+		httpRequest.Header.Set("X-Line-Signature", request.Headers["X-Line-Signature"])
+
+		// Parse the incoming event to a Line event
+		lineEvents, err := notification.Bot.ParseRequest(httpRequest)
+		if err != nil {
+			return events.APIGatewayProxyResponse{StatusCode: 400}, err
+		}
+
+		// Process the Line event
+		for _, event := range lineEvents {
+			notifications.HandleEvent(event)
+		}
+
+		return events.APIGatewayProxyResponse{StatusCode: 200}, nil
 	}
-	httpRequest.Header.Set("X-Line-Signature", request.Headers["X-Line-Signature"])
-
-	// Parse the incoming event to a Line event
-	lineEvents, err := notification.Bot.ParseRequest(httpRequest)
-	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 400}, err
-	}
-
-	// Process the Line event
-	for _, event := range lineEvents {
-		notifications.HandleEvent(event)
-	}
-
-	return events.APIGatewayProxyResponse{StatusCode: 200}, nil
 
 	// 定期実行(event bridge)
 	n.NotifyWeatherToAllUsers()
