@@ -59,7 +59,6 @@ func main() {
 	// prd env
 	if os.Getenv("AWS_EXECUTION_ENV") == "AWS_Lambda" {
 		log.Println("Running on AWS Lambda")
-		// lambda.Start(n.NotifyWeatherToAllUsers)
 		lambda.Start(handler)
 	} else {
 		server.ActivateLocalServer()
