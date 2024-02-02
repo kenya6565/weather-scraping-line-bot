@@ -3,10 +3,18 @@ resource "aws_api_gateway_rest_api" "line_webhook_api" {
   description = "API for LINE webhook"
 }
 
+# ユーザーからのwebhook event(フォローやメッセージ)を受け取るためのエンドポイント
 resource "aws_api_gateway_resource" "line_webhook_resource" {
   rest_api_id = aws_api_gateway_rest_api.line_webhook_api.id
   parent_id   = aws_api_gateway_rest_api.line_webhook_api.root_resource_id
   path_part   = "webhook"
+}
+
+resource "aws_api_gateway_method" "line_webhook_method" {
+  rest_api_id   = aws_api_gateway_rest_api.line_webhook_api.id
+  resource_id   = aws_api_gateway_resource.line_webhook_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "line_webhook_integration" {
@@ -18,16 +26,13 @@ resource "aws_api_gateway_integration" "line_webhook_integration" {
   uri                     = aws_lambda_function.weather_lambda.invoke_arn
 }
 
-# /webhookエンドポイントにPOSTリクエストが送られると、設定したLambda関数が実行
-resource "aws_api_gateway_method" "line_webhook_method" {
-  rest_api_id   = aws_api_gateway_rest_api.line_webhook_api.id
-  resource_id   = aws_api_gateway_resource.line_webhook_resource.id
-  http_method   = "POST"
-  authorization = "NONE"
-}
-
 resource "aws_api_gateway_deployment" "prd_deployment" {
   rest_api_id = aws_api_gateway_rest_api.line_webhook_api.id
+
+   depends_on = [
+    aws_api_gateway_integration.line_webhook_integration,
+    aws_api_gateway_method.line_webhook_method,
+  ]
 
   lifecycle {
     create_before_destroy = true
