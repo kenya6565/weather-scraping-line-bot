@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -19,25 +17,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	// イベント実行(api gateway)
 	if request.Headers != nil {
 		log.Println("Received event: ", request.Body)
-
-		// Create a new http.Request
-		httpRequest, err := http.NewRequest("POST", "/", bytes.NewBufferString(request.Body))
-		if err != nil {
-			return events.APIGatewayProxyResponse{StatusCode: 400}, err
-		}
-		httpRequest.Header.Set("X-Line-Signature", request.Headers["X-Line-Signature"])
-
-		// Parse the incoming event to a Line event
-		lineEvents, err := notification.Bot.ParseRequest(httpRequest)
-		if err != nil {
-			return events.APIGatewayProxyResponse{StatusCode: 400}, err
-		}
-
-		// Process the Line event
-		for _, event := range lineEvents {
-			notifications.HandleEvent(event)
-		}
-
+		notifications.HandleEvent(request.Body)
 		return events.APIGatewayProxyResponse{StatusCode: 200}, nil
 	}
 
