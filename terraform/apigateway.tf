@@ -3,7 +3,7 @@ resource "aws_api_gateway_rest_api" "line_webhook_api" {
   description = "API for LINE webhook"
 }
 
-# ユーザーからのwebhook event(フォローやメッセージ)を受け取るためのエンドポイント
+# ユーザーからのwebhook event(フォローやメッセージ)を受け取るためのエンドポイントの設定
 resource "aws_api_gateway_resource" "line_webhook_resource" {
   rest_api_id = aws_api_gateway_rest_api.line_webhook_api.id
   parent_id   = aws_api_gateway_rest_api.line_webhook_api.root_resource_id
@@ -17,6 +17,7 @@ resource "aws_api_gateway_method" "line_webhook_method" {
   authorization = "NONE"
 }
 
+# line webhookから受け取ったeventをlambda関数に渡すための設定
 resource "aws_api_gateway_integration" "line_webhook_integration" {
   rest_api_id             = aws_api_gateway_rest_api.line_webhook_api.id
   resource_id             = aws_api_gateway_resource.line_webhook_resource.id
