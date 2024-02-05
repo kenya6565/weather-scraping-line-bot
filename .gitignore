@@ -12,7 +12,8 @@
 /terraform/tfplan
 /terraform/terraform.tfstate.backup
 /terraform/.terraform.lock.hcl
-/terraform/terraform.tfvars
+/terraform/terraform.prd.tfvars
+/terraform/terraform.dev.tfvars
 
 .DS_Store
 logfile.log
