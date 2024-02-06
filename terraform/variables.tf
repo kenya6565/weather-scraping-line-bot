@@ -12,3 +12,4 @@ variable "token_uri" {}
 variable "auth_provider_x509_cert_url" {}
 variable "client_x509_cert_url" {}
 variable "universe_domain" {}
+variable "environment" {}
