@@ -28,7 +28,7 @@ func HandleMessageEvent(event *linebot.Event) {
 
 		processor, err := weather.GetWeatherProcessorForCity(message.Text)
 		if err != nil {
-			sendMessageToUser(event.Source.UserID, "申し訳ございませんが、その都市の天気情報はサポートされていません。他の都市名を入力してください。")
+			sendMessageToUser(event.Source.UserID, "ごめんにゃん🐾 その都市の天気情報はサポートされていないにゃ。他の都市名を入力してほしいにゃん！")
 			return
 		}
 
@@ -42,8 +42,9 @@ func HandleMessageEvent(event *linebot.Event) {
 			log.Println("Failed adding city info:", err)
 			return
 		}
-		// NotifyWeatherToAllUsers()
-		NotifyWeatherToUser(event.Source.UserID, message.Text, processor)
+
+		// NotifyWeatherToUser(event.Source.UserID, message.Text, processor)
+		sendMessageToUser(event.Source.UserID, "にゃーん！"+message.Text+"の天気情報を受け取るように設定したにゃ🐾 雨が降りそうな時は教えるにゃ！")
 	}
 }
 
