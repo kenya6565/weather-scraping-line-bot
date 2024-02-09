@@ -44,7 +44,7 @@ func HandleMessageEvent(event *linebot.Event) {
 		}
 
 		// NotifyWeatherToUser(event.Source.UserID, message.Text, processor)
-		sendMessageToUser(event.Source.UserID, "にゃーん！"+message.Text+"の天気情報を受け取るように設定したにゃ🐾 雨が降りそうな時は教えるにゃ！")
+		sendMessageToUser(event.Source.UserID, "にゃーん！"+message.Text+"の天気情報を受け取るように設定したにゃ🐾 降水確率が50%以上の時間帯があった時は教えるにゃ！")
 	}
 }
 
