@@ -18,6 +18,7 @@ func HandleFollowEvent(event *linebot.Event) {
 	if err != nil {
 		log.Printf("Failed to save user ID %s to Firestore: %v", event.Source.UserID, err)
 	}
+	// NotifyWeatherToAllUsers()
 }
 
 // handleMessageEvent processes the message event.
@@ -91,7 +92,12 @@ func NotifyWeatherToAllUsers() {
 
 	for _, user := range users {
 		userID := user["UserId"].(string)
-		city := user["CityName"].(string)
+		city, ok := user["CityName"].(string)
+		if !ok {
+			// 都市情報が存在しない場合、ユーザーに通知
+			sendMessageToUser(userID, "にゃん！まだ都市名が登録されていないにゃ。通知して欲しい都市名をメッセージで送ってほしいにゃん🐾")
+			continue
+		}
 		processor, err := weather.GetWeatherProcessorForCity(city)
 		if err != nil {
 			log.Printf("Failed to get weather processor for city %s: %v", city, err)
