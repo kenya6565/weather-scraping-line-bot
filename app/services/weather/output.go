@@ -15,6 +15,7 @@ func GenerateRainMessages(timeSeriesInfos []domain.TimeSeriesInfo) []string {
 	for _, series := range timeSeriesInfos {
 		for i, popStr := range series.Areas[0].Pops {
 			pop, err := strconv.Atoi(popStr)
+			// TODO: 定数作成して通知する降水確率を設定する
 			// 降水確率が特定の数値を下回るのであればskip(通知しない)
 			// if err != nil || pop <= 0 {
 			// 	continue // Skip if conversion fails or pop is below 20
@@ -25,7 +26,7 @@ func GenerateRainMessages(timeSeriesInfos []domain.TimeSeriesInfo) []string {
 				continue // Skip if error in getting time range
 			}
 
-			message := fmt.Sprintf("時間: %s ~ %s, 降水確率: %d%%", startTime, endTime, pop)
+			message := fmt.Sprintf("%s ~ %sの間、降水確率は%d%%だにゃ🐾", startTime, endTime, pop)
 			messages = append(messages, message)
 		}
 	}
