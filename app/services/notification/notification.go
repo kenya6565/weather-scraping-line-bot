@@ -1,8 +1,11 @@
 package notification
 
 import (
+	"fmt"
 	"log"
+	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/kenya6565/weather-scraping-line-bot/app/infrastructure/db"
 	"github.com/kenya6565/weather-scraping-line-bot/app/infrastructure/db/repository"
@@ -70,7 +73,32 @@ func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor
 		log.Print("All precipitation probabilities for city are less than 50%")
 	}
 
-	combinedMessage := city + "の天気予報：\n" + strings.Join(messages, "\n")
+	catMessages := []string{
+		"雨が降るかもしれないにゃん、傘を忘れずににゃ！🌂",
+		"にゃんと！雨の予報だにゃ、足元に気をつけてにゃん🐾",
+		"雨降りの日は、お家でまったりするのもいいにゃんね😸",
+		"雨の日も冒険は続くにゃ！ブーツを履いて出かけようにゃん👢",
+		"にゃあ、雨音は心地いいにゃん。でも外出する時は濡れないようににゃ！☔",
+		"雨の日は、窓辺で雨を眺めるのも一興にゃんね🌧️",
+		"にゃん、雨が降っても心は晴れやかにゃん！",
+		"雨の中を歩くのも、たまには新鮮でいいにゃんね🐾",
+		"雨でもにゃんとも素敵な一日をにゃん！",
+		"雨の日は読書にゃんね、おすすめの本はあるにゃ？",
+		"にゃんにゃん、雨でも遊べる室内の遊びを見つけようにゃ！",
+		"雨の日は、にゃんこのようにゆっくり過ごすのもにゃいすにゃん！",
+		"にゃん、雨の日は特別なおやつの日にしようにゃ！",
+		"雨の音を聞きながら、お昼寝もいいにゃんね😴",
+		"雨の日は、にゃんこの写真を撮るチャンスにゃん！",
+		"にゃん、雨でも楽しめることはたくさんあるにゃん！",
+		"雨の日は、新しいことに挑戦するのもいいにゃんね！",
+		"雨の日の散歩も、新しい発見があるかもしれないにゃん！",
+		"にゃん、雨の日はお絵描きの時間にしようにゃ！",
+		"雨の日は、にゃんこのように窓辺でのんびりするのもいいにゃんね🐾",
+	}
+	randomIndex := rand.Intn(len(catMessages))
+	randomCatMessage := catMessages[randomIndex]
+
+	combinedMessage := fmt.Sprintf("%sの%sの天気予報にゃ🐈 ：\n%s\n%s", time.Now().Format("2006-01-02"), city, strings.Join(messages, "\n"), randomCatMessage)
 	sendMessageToUser(userID, combinedMessage)
 }
 
