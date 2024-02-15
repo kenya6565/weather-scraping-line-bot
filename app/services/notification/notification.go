@@ -14,10 +14,23 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
-// handleFollowEvent stores the user's ID to Firestore when the user starts following the bot.
+const USER_LIMIT = 10
+
 func HandleFollowEvent(event *linebot.Event) {
+	users, err := repository.GetAllUsers()
+	if err != nil {
+		log.Printf("Failed to get user count: %v", err)
+		return
+	}
+
+	// check if the number of users reaches the limit
+	if len(users) >= USER_LIMIT {
+		sendMessageToUser(event.Source.UserID, "ごめんにゃん🐾 現在、ユーザー数が上限に達しているため、フォローできないにゃ。")
+		return
+	}
+
 	ctx := db.CreateContext()
-	_, err := repository.StoreUserID(ctx, event.Source.UserID)
+	_, err = repository.StoreUserID(ctx, event.Source.UserID)
 	if err != nil {
 		log.Printf("Failed to save user ID %s to Firestore: %v", event.Source.UserID, err)
 	}
