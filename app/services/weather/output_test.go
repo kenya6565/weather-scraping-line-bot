@@ -28,8 +28,22 @@ func TestGenerateRainMessages(t *testing.T) {
 	messages := GenerateRainMessages(timeSeriesInfos)
 	assert.Equal(t, 5, len(messages), "メッセージの数はTimeSeriesInfoの数と一致する")
 
-	// フォーマットエラーケース
+	timeSeriesInfos = createSampleTimeSeriesInfo()
+	for i := range timeSeriesInfos[0].Areas[0].Pops {
+		timeSeriesInfos[0].Areas[0].Pops[i] = "40"
+	}
+	messages = GenerateRainMessages(timeSeriesInfos)
+	assert.Equal(t, 0, len(messages), "全ての降水確率が閾値未満の場合、メッセージは生成されない")
+
+	// 異常ケース
+	timeSeriesInfos = createSampleTimeSeriesInfo()
 	timeSeriesInfos[0].TimeDefines[0] = "不正な日時"
 	messages = GenerateRainMessages(timeSeriesInfos)
 	assert.Equal(t, 4, len(messages), "不正な日時フォーマットの場合は対応するメッセージが生成されない")
+	assert.Equal(t, 4, len(messages), "不正な日時フォーマットの場合は対応するメッセージが生成されない")
+
+	timeSeriesInfos = createSampleTimeSeriesInfo()
+	timeSeriesInfos[0].Areas[0].Pops[0] = "不正な数値"
+	messages = GenerateRainMessages(timeSeriesInfos)
+	assert.Equal(t, 4, len(messages), "数値に変換できない降水確率が含まれる場合、対応するメッセージが生成されない")
 }
