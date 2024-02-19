@@ -84,6 +84,7 @@ func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor
 	// when no precipitation
 	if len(messages) == 0 {
 		log.Print("All precipitation probabilities for city are less than 50%")
+		return
 	}
 
 	catMessages := []string{
