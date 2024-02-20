@@ -16,7 +16,7 @@ func HandleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	notifications.HandleEvent(string(body))
+	notifications.HandleLineEvent(string(body))
 }
 
 func ActivateLocalServer() {

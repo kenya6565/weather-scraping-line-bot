@@ -13,11 +13,11 @@ import (
 	n "github.com/kenya6565/weather-scraping-line-bot/app/services/notification"
 )
 
-func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func HandleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// イベント実行(api gateway)
 	if request.Headers != nil {
 		log.Println("Received event: ", request.Body)
-		notifications.HandleEvent(request.Body)
+		notifications.HandleLineEvent(request.Body)
 		return events.APIGatewayProxyResponse{StatusCode: 200}, nil
 	}
 
@@ -39,7 +39,7 @@ func main() {
 	// prd env
 	if os.Getenv("AWS_EXECUTION_ENV") == "AWS_Lambda" {
 		log.Println("Running on AWS Lambda")
-		lambda.Start(handler)
+		lambda.Start(HandleAPIGatewayRequest)
 	} else {
 		server.ActivateLocalServer()
 	}

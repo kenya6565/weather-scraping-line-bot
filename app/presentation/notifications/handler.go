@@ -9,7 +9,7 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
-func HandleEvent(body string) {
+func HandleLineEvent(body string) {
 	var lineEvent domain.LineEvent
 	err := json.Unmarshal([]byte(body), &lineEvent)
 	if err != nil {
