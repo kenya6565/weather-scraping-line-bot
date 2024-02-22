@@ -3,7 +3,7 @@
 ## 技術スタック
 
 - 言語: Golang
-- インフラ: AWS (Lambda, API Gateway, EventBridge, SNS, SQS, Parameter Store)
+- インフラ: AWS (Lambda, API Gateway, EventBridge, Parameter Store)
 - データベース: Firestore
 - その他: LINE Messaging API, 気象庁API, Terraform
 
