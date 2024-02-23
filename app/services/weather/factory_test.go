@@ -29,3 +29,17 @@ func TestGetWeatherProcessorForCity(t *testing.T) {
 		}
 	}
 }
+
+func TestCityWeatherConfigMethods(t *testing.T) {
+	c := CityWeatherConfig{
+		CityName:       "横浜",
+		JmaApiEndpoint: "https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json",
+		AreaCode:       "140020",
+		AreaName:       "西部",
+	}
+
+	assert.Equal(t, "横浜", c.GetCityName(), "CityNameが正しく取得できること")
+	assert.Equal(t, "https://www.jma.go.jp/bosai/forecast/data/forecast/140000.json", c.GetJmaApiEndpoint(), "JmaApiEndpointが正しく取得できること")
+	assert.Equal(t, "140020", c.GetAreaCode(), "AreaCodeが正しく取得できること")
+	assert.Equal(t, "西部", c.GetAreaName(), "AreaNameが正しく取得できること")
+}
