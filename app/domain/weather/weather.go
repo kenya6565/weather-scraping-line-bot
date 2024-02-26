@@ -1,4 +1,4 @@
-package domain
+package weather
 
 type WeatherInfo struct {
 	TimeSeries []TimeSeriesInfo `json:"timeSeries"`

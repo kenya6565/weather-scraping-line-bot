@@ -1,4 +1,4 @@
-package domain
+package notification
 
 type LineEvent struct {
 	Events []struct {

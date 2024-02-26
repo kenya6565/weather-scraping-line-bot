@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"log"
 
-	domain "github.com/kenya6565/weather-scraping-line-bot/app/domain/notification"
+	domainNotification "github.com/kenya6565/weather-scraping-line-bot/app/domain/notification"
 	"github.com/kenya6565/weather-scraping-line-bot/app/services/notification"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 func HandleLineEvent(body string) {
-	var lineEvent domain.LineEvent
+	var lineEvent domainNotification.LineEvent
 	err := json.Unmarshal([]byte(body), &lineEvent)
 	if err != nil {
 		log.Printf("Error unmarshalling event: %v", err)
