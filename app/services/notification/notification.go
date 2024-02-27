@@ -37,8 +37,6 @@ func HandleFollowEvent(event *linebot.Event) {
 	// NotifyWeatherToAllUsers()
 }
 
-// handleMessageEvent processes the message event.
-// When a user sends a city name, it triggers the weather notification.
 func HandleMessageEvent(event *linebot.Event) {
 	if message, ok := event.Message.(*linebot.TextMessage); ok {
 		log.Printf("Received message from user %s: %s", event.Source.UserID, message.Text)
@@ -62,6 +60,15 @@ func HandleMessageEvent(event *linebot.Event) {
 
 		// NotifyWeatherToUser(event.Source.UserID, message.Text, processor)
 		sendMessageToUser(event.Source.UserID, "にゃーん！"+message.Text+"の天気情報を受け取るように設定したにゃ🐾 降水確率が50%以上の時間帯があった時は教えるにゃ！")
+	}
+}
+
+// sendMessageToUser sends a text message to the specified user.
+func sendMessageToUser(userID, message string) {
+	if _, err := notification.Bot.PushMessage(userID, linebot.NewTextMessage(message)).Do(); err != nil {
+		log.Printf("Failed to send message to user %s: %v", userID, err)
+	} else {
+		log.Printf("Successfully sent message to user %s", userID)
 	}
 }
 
@@ -114,15 +121,6 @@ func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor
 
 	combinedMessage := fmt.Sprintf("%sの%sの雨予報にゃ🐱 \n%s\n%s", time.Now().Format("2006-01-02"), city, strings.Join(messages, "\n"), randomCatMessage)
 	sendMessageToUser(userID, combinedMessage)
-}
-
-// sendMessageToUser sends a text message to the specified user.
-func sendMessageToUser(userID, message string) {
-	if _, err := notification.Bot.PushMessage(userID, linebot.NewTextMessage(message)).Do(); err != nil {
-		log.Printf("Failed to send message to user %s: %v", userID, err)
-	} else {
-		log.Printf("Successfully sent message to user %s", userID)
-	}
 }
 
 func NotifyWeatherToAllUsers() {
