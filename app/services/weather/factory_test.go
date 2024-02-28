@@ -7,7 +7,6 @@ import (
 )
 
 func TestGetWeatherProcessorForCity(t *testing.T) {
-	// テストケース
 	testCases := []struct {
 		city           string
 		expectedError  bool
