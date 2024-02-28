@@ -116,6 +116,7 @@ func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor
 		"にゃん、雨の日はお絵描きの時間にしようにゃ！",
 		"雨の日は、にゃんこのように窓辺でのんびりするのもいいにゃんね🐾",
 	}
+	rand.Seed(time.Now().UnixNano())
 	randomIndex := rand.Intn(len(catMessages))
 	randomCatMessage := catMessages[randomIndex]
 
