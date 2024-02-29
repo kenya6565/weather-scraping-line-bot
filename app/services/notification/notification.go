@@ -72,28 +72,7 @@ func sendMessageToUser(userID, message string) {
 	}
 }
 
-// NotifyWeatherToUser sends a weather report or an error message to the user.
-func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor) {
-	log.Printf("NotifyWeatherToUser called for user %s and city %s", userID, city)
-	weatherReport, err := processor.FetchDataFromJMA()
-	if err != nil {
-		log.Printf("Failed to fetch weather report for city %s: %v", city, err)
-		return
-	}
-
-	timeSeriesInfos, err := processor.TransformWeatherData(weatherReport)
-	if err != nil {
-		log.Printf("Failed to transform weather data for city %s: %v", city, err)
-		return
-	}
-	messages := weather.GenerateRainMessages(timeSeriesInfos)
-
-	// when no precipitation
-	if len(messages) == 0 {
-		log.Print("All precipitation probabilities for city are less than 50%")
-		return
-	}
-
+func getRandomCatMessage() string {
 	catMessages := []string{
 		"雨が降るかもしれないにゃん、傘を忘れずににゃ！🌂",
 		"にゃんと！雨の予報だにゃ、足元に気をつけてにゃん🐾",
@@ -118,8 +97,32 @@ func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor
 	}
 	rand.Seed(time.Now().UnixNano())
 	randomIndex := rand.Intn(len(catMessages))
-	randomCatMessage := catMessages[randomIndex]
+	return catMessages[randomIndex]
+}
 
+// NotifyWeatherToUser sends a weather report or an error message to the user.
+func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor) {
+	log.Printf("NotifyWeatherToUser called for user %s and city %s", userID, city)
+	weatherReport, err := processor.FetchDataFromJMA()
+	if err != nil {
+		log.Printf("Failed to fetch weather report for city %s: %v", city, err)
+		return
+	}
+
+	timeSeriesInfos, err := processor.TransformWeatherData(weatherReport)
+	if err != nil {
+		log.Printf("Failed to transform weather data for city %s: %v", city, err)
+		return
+	}
+	messages := weather.GenerateRainMessages(timeSeriesInfos)
+
+	// when no precipitation
+	if len(messages) == 0 {
+		log.Print("All precipitation probabilities for city are less than 50%")
+		return
+	}
+
+	randomCatMessage := getRandomCatMessage()
 	combinedMessage := fmt.Sprintf("%sの%sの雨予報にゃ🐱 \n%s\n%s", time.Now().Format("2006-01-02"), city, strings.Join(messages, "\n"), randomCatMessage)
 	sendMessageToUser(userID, combinedMessage)
 }
