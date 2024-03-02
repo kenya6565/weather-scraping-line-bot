@@ -123,7 +123,7 @@ func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor
 	}
 
 	randomCatMessage := getRandomCatMessage()
-	combinedMessage := fmt.Sprintf("%sの%sの雨予報にゃ🐱 \n%s\n%s", time.Now().Format("2006-01-02"), city, strings.Join(messages, "\n"), randomCatMessage)
+	combinedMessage := fmt.Sprintf("%sの%sの雨予報にゃ🐱 \n%s\n%s", time.Now().Add(24*time.Hour).Format("2006-01-02"), city, strings.Join(messages, "\n"), randomCatMessage)
 	sendMessageToUser(userID, combinedMessage)
 }
 
