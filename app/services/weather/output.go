@@ -43,7 +43,7 @@ func GenerateRainMessages(timeSeriesInfos []domain.TimeSeriesInfo) []string {
 			if err != nil {
 				continue
 			}
-			message := fmt.Sprintf("%s~%s:降水確率%d%%にゃ🐾", startTime[11:], endTime, pop)
+			message := fmt.Sprintf("%s〜%s:降水確率%d%%にゃ🐾", startTime[11:], endTime, pop)
 			messages = append(messages, message)
 		}
 	}
