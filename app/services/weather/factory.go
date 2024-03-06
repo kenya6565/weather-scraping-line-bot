@@ -43,6 +43,13 @@ func GetWeatherProcessorForCity(city string) (WeatherProcessor, error) {
 			AreaCode:       "130010",
 			AreaName:       "東京地方",
 		}, nil
+	case "千葉":
+		return &CityWeatherConfig{
+			CityName:       "千葉",
+			JmaApiEndpoint: "https://www.jma.go.jp/bosai/forecast/data/forecast/120000.json",
+			AreaCode:       "120010",
+			AreaName:       "北西部",
+		}, nil
 	case "大阪":
 		return &CityWeatherConfig{
 			CityName:       "大阪",
