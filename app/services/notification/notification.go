@@ -100,6 +100,12 @@ func getRandomCatMessage() string {
 	return catMessages[randomIndex]
 }
 
+func buildCombinedMessage(city string, messages []string, randomCatMessage string) string {
+	currentDate := time.Now().Add(24 * time.Hour).Format("2006-01-02")
+	combinedMessage := fmt.Sprintf("%sの%sの雨予報にゃ🐱 \n%s\n%s", currentDate, city, strings.Join(messages, "\n"), randomCatMessage)
+	return combinedMessage
+}
+
 // NotifyWeatherToUser sends a weather report or an error message to the user.
 func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor) {
 	log.Printf("NotifyWeatherToUser called for user %s and city %s", userID, city)
@@ -123,7 +129,7 @@ func NotifyWeatherToUser(userID, city string, processor weather.WeatherProcessor
 	}
 
 	randomCatMessage := getRandomCatMessage()
-	combinedMessage := fmt.Sprintf("%sの%sの雨予報にゃ🐱 \n%s\n%s", time.Now().Add(24*time.Hour).Format("2006-01-02"), city, strings.Join(messages, "\n"), randomCatMessage)
+	combinedMessage := buildCombinedMessage(city, messages, randomCatMessage)
 	sendMessageToUser(userID, combinedMessage)
 }
 
