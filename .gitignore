@@ -14,6 +14,7 @@
 /terraform/.terraform.lock.hcl
 /terraform/terraform.prd.tfvars
 /terraform/terraform.dev.tfvars
+/terraform/.terraform/environment
 
 .DS_Store
 logfile.log
