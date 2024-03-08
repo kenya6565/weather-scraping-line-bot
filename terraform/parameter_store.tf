@@ -1,23 +1,23 @@
 resource "aws_ssm_parameter" "line_channel_secret" {
-  name  = "/app/line_channel_secret"
+  name  = "/app/${terraform.workspace}/line_channel_secret"
   type  = "SecureString"
   value = var.line_channel_secret
 }
 
 resource "aws_ssm_parameter" "line_access_token" {
-  name  = "/app/line_access_token"
+  name  = "/app/${terraform.workspace}/line_access_token"
   type  = "SecureString"
   value = var.line_access_token
 }
 
 resource "aws_ssm_parameter" "firebase_project_id" {
-  name  = "/app/firebase_project_id"
+  name  = "/app/${terraform.workspace}/firebase_project_id"
   type  = "SecureString"
   value = var.firebase_project_id
 }
 
 resource "aws_ssm_parameter" "google_application_credentials" {
-  name  = "/app/google_application_credentials"
+  name  = "/app/${terraform.workspace}/google_application_credentials"
   type  = "SecureString"
   value = jsonencode({
     type = var.type,

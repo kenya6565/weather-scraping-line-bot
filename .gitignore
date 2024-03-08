@@ -8,6 +8,7 @@
 /app/cmd/bootstrap.zip
 
 /terraform/.terraform/
+/terraform/terraform.tfstate.d/
 /terraform/terraform.tfstate
 /terraform/tfplan
 /terraform/terraform.tfstate.backup
