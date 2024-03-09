@@ -25,6 +25,7 @@ resource "aws_lambda_function" "weather_lambda" {
   environment {
     variables = {
       AWS_EXECUTION_ENV = "AWS_Lambda"
+      ENVIRONMENT       = terraform.workspace
     }
   }
 
