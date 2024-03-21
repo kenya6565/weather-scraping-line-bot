@@ -1,6 +1,7 @@
 package notification
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -23,7 +24,8 @@ func InitLineBot() {
 		svc := ssm.New(sess, aws.NewConfig().WithRegion("ap-northeast-1"))
 
 		// LINE_CHANNEL_SECRETの読み込み
-		secretName := "/app/line_channel_secret"
+		environment := os.Getenv("ENVIRONMENT")
+		secretName := fmt.Sprintf("/app/%s/line_channel_secret", environment)
 		param, err := svc.GetParameter(&ssm.GetParameterInput{
 			Name:           aws.String(secretName),
 			WithDecryption: aws.Bool(true),
@@ -34,7 +36,7 @@ func InitLineBot() {
 		lineChannelSecret := *param.Parameter.Value
 
 		// LINE_ACCESS_TOKENの読み込み
-		secretName = "/app/line_access_token"
+		secretName = fmt.Sprintf("/app/%s/line_access_token", environment)
 		param, err = svc.GetParameter(&ssm.GetParameterInput{
 			Name:           aws.String(secretName),
 			WithDecryption: aws.Bool(true),

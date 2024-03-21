@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -32,7 +33,8 @@ func InitFirestoreClient() error {
 		svc := ssm.New(sess, aws.NewConfig().WithRegion("ap-northeast-1"))
 
 		// FIREBASE_PROJECT_IDの読み込み
-		secretName := "/app/firebase_project_id"
+		environment := os.Getenv("ENVIRONMENT")
+		secretName := fmt.Sprintf("/app/%s/firebase_project_id", environment)
 		param, err := svc.GetParameter(&ssm.GetParameterInput{
 			Name:           aws.String(secretName),
 			WithDecryption: aws.Bool(true),
@@ -43,7 +45,7 @@ func InitFirestoreClient() error {
 		FirebaseProjectID = *param.Parameter.Value
 
 		// GOOGLE_APPLICATION_CREDENTIALSの読み込み
-		secretName = "/app/google_application_credentials"
+		secretName = fmt.Sprintf("/app/%s/google_application_credentials", environment)
 		param, err = svc.GetParameter(&ssm.GetParameterInput{
 			Name:           aws.String(secretName),
 			WithDecryption: aws.Bool(true),

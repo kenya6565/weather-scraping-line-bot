@@ -13,7 +13,7 @@ resource "null_resource" "build_lambda" {
 }
 
 resource "aws_lambda_function" "weather_lambda" {
-  function_name = "WeatherLambda"
+  function_name = "WeatherLambda-${terraform.workspace}"
   runtime       = "provided.al2"
   handler       = "bootstrap"
 
@@ -25,6 +25,7 @@ resource "aws_lambda_function" "weather_lambda" {
   environment {
     variables = {
       AWS_EXECUTION_ENV = "AWS_Lambda"
+      ENVIRONMENT       = terraform.workspace
     }
   }
 
@@ -35,7 +36,7 @@ resource "aws_lambda_function" "weather_lambda" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda_role"
+  name = "lambda_role-${terraform.workspace}"
 
   assume_role_policy = <<EOF
 {
@@ -55,7 +56,7 @@ EOF
 }
 
 resource "aws_iam_policy" "ssm_get_parameter" {
-  name        = "SSMGetParameter"
+  name        = "SSMGetParameter-${terraform.workspace}"
   description = "Allow lambda function to get parameters from SSM"
 
   policy = <<EOF
